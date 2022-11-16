@@ -9,6 +9,7 @@ namespace Service.Inteface
 {
     public interface IEncrypt
     {
-        public string Decrypt_Password(TabUsersDetail tabUsersDetail);
+        public string EncodePasswordToBase64(string password);
+        public string Decrypt_Password(string encodeData);
     }
 }

@@ -22,38 +22,60 @@ namespace Service.Services
             List<TabUsersDetail> users = new List<TabUsersDetail>();
             return users;
         }
-        public string Register(TabUsersDetail tblUser)
+        public bool Register(TabUsersDetail tblUser)
         {
+            Encrypt encrypt1 = new Encrypt();
+            string encryptPassword = encrypt1.EncodePasswordToBase64(tblUser.Password);
+            tblUser.Password = encryptPassword;
+            tblUser.CreateDate = DateTime.Now;
+            tblUser.UpdateDate = null;
+            tblUser.Status = 1;
             var Email = _dbContext.TabUsersDetails.Find(tblUser.EmailId);
-            if (Email != null)
+            if (Email == null)
             {
-                return "false";
+                _dbContext.TabUsersDetails.Add(tblUser);
+                _dbContext.SaveChanges();
+                return true;
             }
             else
             {
-                _dbContext.TabUsersDetails.Add(tblUser);
-                var password = _dbContext.TabUsersDetails.Find(tblUser.Password);
-                if(password != null)
-                {
-                    Encrypt encrypt = new Encrypt();
-                    encrypt.Decrypt_Password(tblUser.Password);
-                }
-                _dbContext.SaveChanges();
-                return "";
+                return false;
             }
+  
         }
-
-       public bool Update(TabUsersDetail tblUser)
+       public bool Login(TabUsersDetail tblUser)
         {  
-            _dbContext.TabUsersDetails.Update(tblUser);
-            _dbContext.SaveChanges();
-            return true;
+
+            Encrypt encrypt1 = new Encrypt();
+            string encryptPassword = encrypt1.EncodePasswordToBase64(tblUser.Password);
+            TabUsersDetail Userlogin = _dbContext.TabUsersDetails.Where(x => x.EmailId == tblUser.EmailId && x.Password == encryptPassword).FirstOrDefault();
+            if (Userlogin != null)
+            {
+
+                return true;
+            }
+            return false;
+
         }
-        public bool Delete(TabUsersDetail tabUsers)
-        {
-            _dbContext.Remove(Delete(tabUsers));
-            return true;
-        }
+        //public bool ForgotPassword(ConfirmPassword changepassword)
+        //{
+        //    var Email = _dbContext.TabUsersDetails.Find(changepassword.EmailId);
+        //    if(Email == null)
+        //    {
+        //        return false;
+        //    }
+        //    else
+        //    {
+        //        Encrypt encrypt1 = new Encrypt();
+
+        //        string encryptPassword = encrypt1.EncodePasswordToBase64(changepassword.Password);
+
+        //        changepassword.Password = encryptPassword;
+        //        return true;
+        //    }
+           
+        //}
+
       }        
     }
     

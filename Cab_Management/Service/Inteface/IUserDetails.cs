@@ -10,11 +10,11 @@ namespace Service.Inteface
     public interface IUserDetails
     {
         List<TabUsersDetail> GetUsersDetails();
-        public string Register(TabUsersDetail tabUsersDetail);
+        public bool Register(TabUsersDetail tabUsersDetail);
 
-        public bool Update(TabUsersDetail tabUsersDetail);  
+        public bool Login(TabUsersDetail tabUsersDetail);  
 
-       public bool Delete(TabUsersDetail tabUsersDetail);
+       //public bool ForgotPassword(ConfirmPassword tabUsersDetail);
 
     }
 }
