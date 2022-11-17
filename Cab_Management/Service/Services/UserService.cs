@@ -19,7 +19,7 @@ namespace Service.Services
         }
         public List<TabUsersDetail> GetUsersDetails()
         {
-            List<TabUsersDetail> users = new List<TabUsersDetail>();
+            List<TabUsersDetail> users =_dbContext.TabUsersDetails.ToList();
             return users;
         }
         public bool Register(TabUsersDetail tblUser)
@@ -43,12 +43,13 @@ namespace Service.Services
             }
   
         }
-       public bool Login(TabUsersDetail tblUser)
+       public bool UserLogin(Login login)
         {  
 
             Encrypt encrypt1 = new Encrypt();
-            string encryptPassword = encrypt1.EncodePasswordToBase64(tblUser.Password);
-            TabUsersDetail Userlogin = _dbContext.TabUsersDetails.Where(x => x.EmailId == tblUser.EmailId && x.Password == encryptPassword).FirstOrDefault();
+            string encryptPassword = encrypt1.EncodePasswordToBase64(login.Password);
+            string decryptPassword = encrypt1.Decrypt_Password(encryptPassword);
+            TabUsersDetail Userlogin = _dbContext.TabUsersDetails.Where(x => x.EmailId == login.EmailId && x.Password == decryptPassword).FirstOrDefault();
             if (Userlogin != null)
             {
 
@@ -56,6 +57,11 @@ namespace Service.Services
             }
             return false;
 
+        }
+
+        public static object GetUser()
+        {
+            throw new NotImplementedException();
         }
         //public bool ForgotPassword(ConfirmPassword changepassword)
         //{
@@ -73,10 +79,10 @@ namespace Service.Services
         //        changepassword.Password = encryptPassword;
         //        return true;
         //    }
-           
+
         //}
 
-      }        
+    }        
     }
     
 

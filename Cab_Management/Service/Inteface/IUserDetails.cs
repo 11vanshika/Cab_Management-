@@ -12,7 +12,7 @@ namespace Service.Inteface
         List<TabUsersDetail> GetUsersDetails();
         public bool Register(TabUsersDetail tabUsersDetail);
 
-        public bool Login(TabUsersDetail tabUsersDetail);  
+        public bool UserLogin(Login login);  
 
        //public bool ForgotPassword(ConfirmPassword tabUsersDetail);
 
