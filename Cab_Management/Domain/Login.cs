@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-    public class Login :TabUsersDetail
+    public class Login
     {
         public string EmailId { get; set; }
         public string Password { get; set; }
+        public string ConfirmPassword { get; set; }
+
     }
 }

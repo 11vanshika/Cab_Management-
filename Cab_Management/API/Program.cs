@@ -13,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("MasterDatabase");
-builder.Services.AddDbContext<DbCabManagementContext>(option =>
+builder.Services.AddDbContext<DbCabServicesContext>(option =>
 option.UseSqlServer(connectionString)
 );
 
