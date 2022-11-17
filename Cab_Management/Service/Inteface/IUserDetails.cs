@@ -9,10 +9,12 @@ namespace Service.Inteface
 {
     public interface IUserDetails
     {
-        List<TabUsersDetail> GetUsersDetails();
-        public bool Register(TabUsersDetail tabUsersDetail);
+        List<TbUser> GetUsersDetails();
+        public bool Register(TbUser tbUsers);
 
         public bool UserLogin(Login login);  
+
+        public bool ForgotPassword(Login login);
 
        //public bool ForgotPassword(ConfirmPassword tabUsersDetail);
 

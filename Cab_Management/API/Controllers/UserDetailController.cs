@@ -16,11 +16,11 @@ namespace API.Controllers
     [ApiController]
     public class UserDetailsController : ControllerBase
     {
-        private readonly DbCabManagementContext dbCabmanagement;
+        private readonly DbCabServicesContext dbCabservice;
         private readonly IUserDetails IuserDetails;
-        public UserDetailsController(DbCabManagementContext dbContext, IUserDetails iuserDetails)
+        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails)
         {
-            dbCabmanagement = dbContext;
+            dbCabservice = dbContext;
             IuserDetails = iuserDetails;
         }
         // GET: api/<UserController>
@@ -38,7 +38,7 @@ namespace API.Controllers
         }
         [HttpPost()]
         [Route("Register")]
-        public JsonResult UserRegister(TabUsersDetail tblUser)
+        public JsonResult UserRegister(TbUser tblUser)
         {
             try
             {
@@ -53,12 +53,13 @@ namespace API.Controllers
         [Route("Login")]
         public JsonResult UpdateUser(Login login)
         {
+
             try
             {
                 bool result = IuserDetails.UserLogin(login);
                 if (result == true)
                 {
-                    return new JsonResult("User Details Updated successfully");
+                    return new JsonResult("User Login successfull");
                 }
                 else
                 {
@@ -70,7 +71,21 @@ namespace API.Controllers
                 return new JsonResult(ex.Message);
             }
         }
-     
+        [HttpPost]
+        [Route("ForgotPassword")]
+        public JsonResult Forgot_password(Login login)
+        {
+            try
+            {
+               // return new JsonResult(IuserDetails.ForgotPassword(tblUser));
+               return new JsonResult(IuserDetails.ForgotPassword(login));
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(ex.Message);
+            }
+        }
+
     }
 }
 

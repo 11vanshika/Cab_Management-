@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Domain;
 using Service.Inteface;
 using Persistence;
@@ -10,80 +11,80 @@ using Persistence;
 
 namespace Service.Services
 {
-    public class UserService : Encrypt,IUserDetails
+    public class UserService : IUserDetails
     {
-        private readonly DbCabManagementContext _dbContext;
-        public UserService(DbCabManagementContext dbcontext)
+        private readonly DbCabServicesContext _dbContext;
+        private readonly IEncrypt _encrypt;
+
+        public UserService(DbCabServicesContext dbcontext, IEncrypt encrypt)
         {
             _dbContext = dbcontext;
+            _encrypt = encrypt; 
         }
-        public List<TabUsersDetail> GetUsersDetails()
+        public List<TbUser> GetUsersDetails()
         {
-            List<TabUsersDetail> users =_dbContext.TabUsersDetails.ToList();
+            List<TbUser> users =_dbContext.TbUsers.ToList();
             return users;
         }
-        public bool Register(TabUsersDetail tblUser)
+        public bool Register(TbUser tblUser)
         {
-            Encrypt encrypt1 = new Encrypt();
-            string encryptPassword = encrypt1.EncodePasswordToBase64(tblUser.Password);
-            tblUser.Password = encryptPassword;
-            tblUser.CreateDate = DateTime.Now;
-            tblUser.UpdateDate = null;
-            tblUser.Status = 1;
-            var Email = _dbContext.TabUsersDetails.Find(tblUser.EmailId);
+            var Email = _dbContext.TbUsers.Where(x=>x.EmailId==tblUser.EmailId).FirstOrDefault();
             if (Email == null)
             {
-                _dbContext.TabUsersDetails.Add(tblUser);
+                tblUser.Password = _encrypt.EncodePasswordToBase64(tblUser.Password);
+                tblUser.CreateDate = DateTime.Now;
+                tblUser.UpdateDate = null;
+                tblUser.Status = 1;
+                _dbContext.TbUsers.Add(tblUser);
                 _dbContext.SaveChanges();
                 return true;
             }
             else
             {
                 return false;
-            }
-  
+            }  
         }
        public bool UserLogin(Login login)
         {  
-
-            Encrypt encrypt1 = new Encrypt();
-            string encryptPassword = encrypt1.EncodePasswordToBase64(login.Password);
-            string decryptPassword = encrypt1.Decrypt_Password(encryptPassword);
-            TabUsersDetail Userlogin = _dbContext.TabUsersDetails.Where(x => x.EmailId == login.EmailId && x.Password == decryptPassword).FirstOrDefault();
+           string encryptPassword = _encrypt.EncodePasswordToBase64(login.Password);
+            string decryptPassword = _encrypt.Decrypt_Password(encryptPassword);
+             TbUser Userlogin = _dbContext.TbUsers.Where(x=>x.EmailId==login.EmailId && x.Password==encryptPassword).FirstOrDefault();
             if (Userlogin != null)
             {
-
                 return true;
             }
-            return false;
-
+            else
+            {
+                return false;
+            }
         }
-
-        public static object GetUser()
+        public bool ForgotPassword(Login login)
         {
-            throw new NotImplementedException();
+            TbUser UserEmail = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId).SingleOrDefault();
+            if (UserEmail == null)
+            {
+                return false;
+            }
+            else
+            {
+                string encryptnewPassword = _encrypt.EncodePasswordToBase64(login.Password);
+                string encryptconfirmPassword = _encrypt.EncodePasswordToBase64(login.ConfirmPassword);             
+                if(encryptnewPassword == encryptconfirmPassword)
+                {
+                    UserEmail.Password = encryptnewPassword;
+                    UserEmail.UpdateDate = DateTime.Now;
+                    _dbContext.Entry(UserEmail).State = EntityState.Modified;
+                    _dbContext.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }               
+            }
         }
-        //public bool ForgotPassword(ConfirmPassword changepassword)
-        //{
-        //    var Email = _dbContext.TabUsersDetails.Find(changepassword.EmailId);
-        //    if(Email == null)
-        //    {
-        //        return false;
-        //    }
-        //    else
-        //    {
-        //        Encrypt encrypt1 = new Encrypt();
-
-        //        string encryptPassword = encrypt1.EncodePasswordToBase64(changepassword.Password);
-
-        //        changepassword.Password = encryptPassword;
-        //        return true;
-        //    }
-
-        //}
-
-    }        
-    }
+    }      
+}
     
 
 
