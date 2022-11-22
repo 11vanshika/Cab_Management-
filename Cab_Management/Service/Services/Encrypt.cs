@@ -35,6 +35,6 @@ namespace Service.Services
             string result = new String(decoded_char);
             return result;
         }
-
     }
+
 }

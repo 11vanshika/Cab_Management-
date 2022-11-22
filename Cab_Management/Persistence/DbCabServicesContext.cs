@@ -16,6 +16,10 @@ public partial class DbCabServicesContext : DbContext
     {
     }
 
+    public virtual DbSet<TbCabDetail> TbCabDetails { get; set; }
+
+    public virtual DbSet<TbCabType> TbCabTypes { get; set; }
+
     public virtual DbSet<TbUser> TbUsers { get; set; }
 
     public virtual DbSet<TbUserRole> TbUserRoles { get; set; }
@@ -26,6 +30,39 @@ public partial class DbCabServicesContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<TbCabDetail>(entity =>
+        {
+            entity.HasKey(e => e.Cabid).HasName("PK__tb_Cab_D__66AD3D0504F0A20C");
+
+            entity.ToTable("tb_Cab_Details");
+
+            entity.Property(e => e.CreateDate).HasColumnType("smalldatetime");
+            entity.Property(e => e.RegistrationNun)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.UpdateDate).HasColumnType("smalldatetime");
+
+            entity.HasOne(d => d.CabType).WithMany(p => p.TbCabDetails)
+                .HasForeignKey(d => d.CabTypeId)
+                .HasConstraintName("FK__tb_Cab_De__CabTy__4316F928");
+
+            entity.HasOne(d => d.User).WithMany(p => p.TbCabDetails)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__tb_Cab_De__UserI__440B1D61");
+        });
+
+        modelBuilder.Entity<TbCabType>(entity =>
+        {
+            entity.HasKey(e => e.CabTypeId).HasName("PK__tb_CabTy__5E575436F925A58F");
+
+            entity.ToTable("tb_CabType");
+
+            entity.Property(e => e.CabTypeId).ValueGeneratedNever();
+            entity.Property(e => e.CabName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<TbUser>(entity =>
         {
             entity.HasKey(e => e.UserId).HasName("PK__tb_Users__1788CC4CA911AC87");
