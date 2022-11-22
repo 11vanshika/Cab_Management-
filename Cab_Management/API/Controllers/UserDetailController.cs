@@ -42,7 +42,17 @@ namespace API.Controllers
         {
             try
             {
-                return new JsonResult(IuserDetails.Register(tblUser));
+                bool result = IuserDetails.CheckExtistUser(tblUser);
+                if (result == false)
+                {
+                    
+                        result = IuserDetails.Register(tblUser);
+                        if (result == true)
+                        {
+                            return new JsonResult(new CrudStatus() { Status = result, Message = "Registered successfully" });
+                        }
+                }
+                return new JsonResult(new CrudStatus() { Status = false, Message = "Email Already Exist" });
             }
             catch (Exception ex)
             {
@@ -51,20 +61,17 @@ namespace API.Controllers
         }
         [HttpPost()]
         [Route("Login")]
-        public JsonResult UpdateUser(Login login)
+        public JsonResult UserLogin(Login login)
         {
-
             try
             {
                 bool result = IuserDetails.UserLogin(login);
                 if (result == true)
                 {
-                    return new JsonResult("User Login successfull");
+                    return new JsonResult(new CrudStatus() { Status = true, Message = "User Login successfull" });
+
                 }
-                else
-                {
-                    return new JsonResult("User id not Mached");
-                }
+                return new JsonResult(new CrudStatus() { Status = false, Message = "User id not Mached" });
             }
             catch (Exception ex)
             {
@@ -77,8 +84,24 @@ namespace API.Controllers
         {
             try
             {
-               // return new JsonResult(IuserDetails.ForgotPassword(tblUser));
-               return new JsonResult(IuserDetails.ForgotPassword(login));
+                bool result = IuserDetails.CheckExtistUser(login);
+                if (result == true)
+                {
+                    result = IuserDetails.CheckConfirmPassword(login);
+                    if (result == true)
+                    {
+                        result = IuserDetails.ForgotPassword(login);
+                        if (result == true)
+                        {
+                            return new JsonResult(new CrudStatus() { Status = true, Message = "Password updated successfully" });
+                        }
+                    }
+                    else
+                    {
+                        return new JsonResult(new CrudStatus() { Status = result, Message = "Password and Confirm password not matched" });
+                    }
+                }
+                return new JsonResult(new CrudStatus() { Status = false, Message = "Email not  registered Please Sign up" });
             }
             catch (Exception ex)
             {
