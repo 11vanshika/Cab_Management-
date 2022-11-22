@@ -19,6 +19,7 @@ option.UseSqlServer(connectionString)
 
 builder.Services.AddScoped<IUserDetails, UserService>();
 builder.Services.AddScoped<IEncrypt, Encrypt>();
+builder.Services.AddScoped<ICabDetail, CabDetailService>();
 
 var app = builder.Build();
 
