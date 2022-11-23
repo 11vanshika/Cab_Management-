@@ -24,6 +24,7 @@ namespace API.Controllers
             dbCabservice = dbContext;
             IuserDetails = iuserDetails;
         }
+
         // GET: api/<UserController>
         [HttpGet()]
         public JsonResult GetUserDetail()
