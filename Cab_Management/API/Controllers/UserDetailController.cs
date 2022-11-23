@@ -18,11 +18,13 @@ namespace API.Controllers
     {
         private readonly DbCabServicesContext dbCabservice;
         private readonly IUserDetails IuserDetails;
+
         public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails)
         {
             dbCabservice = dbContext;
             IuserDetails = iuserDetails;
         }
+
         // GET: api/<UserController>
         [HttpGet()]
         public JsonResult GetUserDetail()
