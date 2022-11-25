@@ -200,7 +200,7 @@ namespace UserDetailServiceTest
         {
             //Arrange
             SeedDatabase();
-            var ExistingUser = new Login()
+            var User = new Login()
             {
                 EmailId = "anshika@gmail.com",
                 Password = "12345",
@@ -208,8 +208,8 @@ namespace UserDetailServiceTest
 
             };
             //Act
-            encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            var result = Services.UserLogin(ExistingUser);
+            encrypt.Setup(method => method.EncodePasswordToBase64(User.Password)).Returns(User.Password);
+            var result = Services.UserLogin(User);
             //Assert
             Assert.False(result);
 
