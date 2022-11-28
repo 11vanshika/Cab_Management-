@@ -5,6 +5,10 @@ using Persistence;
 using Service.Services;
 using Domain;
 using Service.Inteface;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 //using Microsoft.Data.SqlClient;
 
@@ -18,11 +22,13 @@ namespace API.Controllers
     {
         private readonly DbCabServicesContext dbCabservice;
         private readonly IUserDetails IuserDetails;
+        private readonly IConfiguration _configuration;
 
-        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails)
+        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration)
         {
             dbCabservice = dbContext;
             IuserDetails = iuserDetails;
+            _configuration = configuration; 
         }
 
         // GET: api/<UserController>
@@ -67,19 +73,22 @@ namespace API.Controllers
         {
             try
             {
-                bool result = IuserDetails.UserLogin(login);
-                if (result == true)
+                string result=IuserDetails.UserLogin(login) ;
+                if (result != null)
                 {
-                    return new JsonResult(new CrudStatus() { Status = true, Message = "User Login successfull" });
-
+                    return new JsonResult(new CrudStatus() { Status = true, Message = result });
                 }
-                return new JsonResult(new CrudStatus() { Status = false, Message = "User id not Mached" });
+                else
+                {
+                    return new JsonResult(new CrudStatus() { Status = false, Message = "User id not Mached" });
+                }
             }
             catch (Exception ex)
             {
                 return new JsonResult(ex.Message);
             }
         }
+
         [HttpPost]
         [Route("ForgotPassword")]
         public JsonResult Forgot_password(Login login)
@@ -110,7 +119,6 @@ namespace API.Controllers
                 return new JsonResult(ex.Message);
             }
         }
-
     }
 }
 
