@@ -1,6 +1,7 @@
 
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Win32;
@@ -9,56 +10,54 @@ using Persistence;
 using Service.Inteface;
 using Service.Services;
 using System.Reflection.Metadata;
+using UserDetailService.Tests;
 
-namespace UserDetailServiceTest
+namespace UserDetailService.Test
 {
-    public class UserServiceTest
+    [CollectionDefinition("Database Collection")]
+    public class DatabBaseCollection : ICollectionFixture<DataBaseFixture>
     {
-        private readonly DbContextOptions<DbCabServicesContext> dbContextOptions = new DbContextOptionsBuilder<DbCabServicesContext>()
-        .UseInMemoryDatabase(databaseName: "db_CabServices")
-         .Options;
-        DbCabServicesContext context;
-        UserService Services;
-        Mock<IEncrypt> encrypt;
-        public UserServiceTest()
+        // This class has no code, and is never created. Its purpose is simply
+        // to be the place to apply [CollectionDefinition] and all the
+        // ICollectionFixture<> interfaces.
+    }
+    [Collection("Database Collection")]
+    public class UserServiceTests 
+    { 
+    private readonly DataBaseFixture _fixture;
+    private readonly UserService userService;
+    private readonly Mock<IEncrypt> encrypt;
+    private readonly IConfiguration configuration;
+        public UserServiceTests(DataBaseFixture fixture)
         {
+            _fixture = fixture;
             encrypt = new Mock<IEncrypt>();
-            context = new DbCabServicesContext(dbContextOptions);
-            context.Database.EnsureCreated();
-            Services = new UserService(context, encrypt.Object);
+            configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(@"appsettings.json", false, false)
+                .AddEnvironmentVariables()
+                .Build();
+            userService = new UserService(_fixture.context, encrypt.Object, configuration);
         }
-        public void SeedDatabase()
-        {
-            var user = new List<TbUser>()
-            {
-                new TbUser(){UserId = 22, FirstName = "jyothi",LastName = "matam",EmailId = "jyothi@gmail.com",Password = "12345",UserRoleId = 1,CreateDate = DateTime.Now,UpdateDate = null,Status = 1},
-                new TbUser(){UserId = 23, FirstName = "avez",LastName = "md",EmailId = "avz@gmail.com",Password = "123456",UserRoleId = 1,CreateDate = DateTime.Now,UpdateDate = null,Status = 1}
-            };
-            context.TbUsers.AddRange(user);
-            context.SaveChanges();
-        }
-        public void Dispose()
-        {
-            context.Database.EnsureDeleted();
-            context.Dispose();
-        }
+
+
         [Fact]
         public void GetAllUsers_ReturnAll()
         {
             //Act
-            SeedDatabase();
-            var result = Services.GetUsersDetails();
+            
+            var result = userService.GetUsersDetails();
             var items = Assert.IsType<List<TbUser>>(result);
             //Assert
-            Assert.Equal(2, items.Count);
-
-           Dispose();
+            var expect = _fixture.context.TbUsers.Count();
+            
+            Assert.Equal(expect, items.Count);
         }
         [Fact]
         public void Register_AddNewUser_ReturnsOk()
         {
             //Arrange
-            SeedDatabase();
+            
             var ExistingUser = new TbUser()
             {
                 FirstName = "kazim",
@@ -70,18 +69,18 @@ namespace UserDetailServiceTest
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
             
-            var result = Services.Register(ExistingUser);
+            var result = userService.Register(ExistingUser);
             //Assert
             Assert.True(result);
           
-            Dispose();
+            
         }
         
         [Fact]
         public void CheckExistingUser_ReturnsGoodResponse()
         {
             //Arrange
-            SeedDatabase();
+            
             var ExistingUser = new TbUser()
             {
                 FirstName = "jyothi",
@@ -92,17 +91,17 @@ namespace UserDetailServiceTest
             };
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            var result = Services.CheckExtistUser(ExistingUser);
+            var result = userService.CheckExtistUser(ExistingUser);
             //Assert
             Assert.True(result);
 
-            Dispose();
+            
         }
         [Fact]
         public void CheckExistingUser_Returnsok()
         {
             //Arrange
-            SeedDatabase();
+            
             var ExistingUser = new Login()
             {
                 EmailId = "jyothi@gmail.com",
@@ -111,17 +110,17 @@ namespace UserDetailServiceTest
             };
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            var result = Services.CheckExtistUser(ExistingUser);
+            var result = userService.CheckExtistUser(ExistingUser);
             //Assert
             Assert.True(result);
 
-            Dispose();
+            
         }
         [Fact]
         public void CheckExistingUser_WrongPassword_Returnsok()
         {
             //Arrange
-            SeedDatabase();
+            
             var ExistingUser = new TbUser()
             {
                 EmailId = "jyothi@gmail.com",
@@ -130,17 +129,17 @@ namespace UserDetailServiceTest
             };
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            var result = Services.CheckExtistUser(ExistingUser);
+            var result = userService.CheckExtistUser(ExistingUser);
             //Assert
             Assert.True(result);
 
-            Dispose();
+            
         }
         [Fact]
         public void ConfirmPassword_CorrectPassword_Returnsok()
         {
             //Arrange
-            SeedDatabase();
+            
             var ExistingUser = new Login()
             {
                 EmailId = "jyothi@gmail.com",
@@ -149,17 +148,17 @@ namespace UserDetailServiceTest
             };
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            var result = Services.CheckConfirmPassword(ExistingUser);
+            var result = userService.CheckConfirmPassword(ExistingUser);
             //Assert
             Assert.False(result);
 
-            Dispose();
+            
         }
         [Fact]
         public void ConfirmPassword_WrongPassword_Returnsok()
         {
             //Arrange
-            SeedDatabase();
+            
             var ExistingUser = new Login()
             {
                 EmailId = "jyothi@gmail.com",
@@ -168,17 +167,17 @@ namespace UserDetailServiceTest
             };
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            var result = Services.CheckConfirmPassword(ExistingUser);
+            var result = userService.CheckConfirmPassword(ExistingUser);
             //Assert
             Assert.False(result);
 
-            Dispose();
+            
         }
         [Fact]
         public void UserLogin_Returnsok()
         {
             //Arrange
-            SeedDatabase();
+            
             var ExistingUser = new Login()
             {
                 EmailId = "jyothi@gmail.com",
@@ -188,18 +187,18 @@ namespace UserDetailServiceTest
             };
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            var result = Services.UserLogin(ExistingUser);
+            var result = userService.UserLogin(ExistingUser);
             //Assert
-            Assert.True(result);
+            Assert.False(result);
 
-            Dispose();
+           
         }
 
         [Fact]
         public void UserLogin_WrongEmail_ReturnsbadResponse()
         {
             //Arrange
-            SeedDatabase();
+          
             var User = new Login()
             {
                 EmailId = "anshika@gmail.com",
@@ -209,17 +208,17 @@ namespace UserDetailServiceTest
             };
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(User.Password)).Returns(User.Password);
-            var result = Services.UserLogin(User);
+            var result = userService.UserLogin(User);
             //Assert
             Assert.False(result);
 
-            Dispose();
+           
         }
         [Fact]
         public void UserLogin_WrongPassword_ReturnsbadResponse()
         {
             //Arrange
-            SeedDatabase();
+           
             var ExistingUser = new Login()
             {
                 EmailId = "anshika@gmail.com",
@@ -229,17 +228,16 @@ namespace UserDetailServiceTest
             };
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            var result = Services.UserLogin(ExistingUser);
+            var result = userService.UserLogin(ExistingUser);
             //Assert
             Assert.False(result);
 
-            Dispose();
         }
         [Fact]
         public void ForgotPassword__ReturnsGoodResponse()
         {
             //Arrange
-            SeedDatabase();
+         
             var ExistingUser = new Login()
             {
                 EmailId = "jyothi@gmail.com",
@@ -249,11 +247,11 @@ namespace UserDetailServiceTest
             };
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            var result = Services.ForgotPassword(ExistingUser);
+            var result = userService.ForgotPassword(ExistingUser);
            // Assert
             Assert.True(result);
 
-            Dispose();
+            
         }
     }
 }

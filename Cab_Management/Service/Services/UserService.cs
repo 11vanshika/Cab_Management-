@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Domain;
 using Service.Inteface;
 using Persistence;
-
+using Microsoft.Extensions.Configuration;
 
 namespace Service.Services
 {
@@ -15,11 +15,13 @@ namespace Service.Services
     {
         private readonly DbCabServicesContext _dbContext;
         private readonly IEncrypt _encrypt;
+        private readonly IConfiguration _configuration;
 
-        public UserService(DbCabServicesContext dbcontext, IEncrypt encrypt)
+        public UserService(DbCabServicesContext dbcontext, IEncrypt encrypt,IConfiguration configuration)
         {
             _dbContext = dbcontext;
             _encrypt = encrypt;
+            _configuration = configuration;
         }
         public List<TbUser> GetUsersDetails()
         {
