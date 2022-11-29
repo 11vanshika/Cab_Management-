@@ -189,7 +189,7 @@ namespace UserDetailService.Test
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
             var result = userService.UserLogin(ExistingUser);
             //Assert
-            Assert.False(result);
+            Assert.NotNull(result);
 
            
         }
@@ -206,13 +206,15 @@ namespace UserDetailService.Test
                 ConfirmPassword = "12345"
 
             };
+            var expected = "User EmailId or Password not matched";
+
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(User.Password)).Returns(User.Password);
             var result = userService.UserLogin(User);
             //Assert
-            Assert.False(result);
+            Assert.Equal(expected, result);
 
-           
+
         }
         [Fact]
         public void UserLogin_WrongPassword_ReturnsbadResponse()
@@ -226,11 +228,12 @@ namespace UserDetailService.Test
                 ConfirmPassword = "12345"
 
             };
+            var expected = "User EmailId or Password not matched";
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
             var result = userService.UserLogin(ExistingUser);
             //Assert
-            Assert.False(result);
+            Assert.Equal(expected,result);
 
         }
         [Fact]

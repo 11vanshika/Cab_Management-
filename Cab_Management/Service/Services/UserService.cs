@@ -8,6 +8,9 @@ using Domain;
 using Service.Inteface;
 using Persistence;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Service.Services
 {
@@ -69,17 +72,36 @@ namespace Service.Services
             return true;
         }
 
-        public bool UserLogin(Login login)
+        public string UserLogin(Login login)
         {
-            TbUser Userlogin = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId && x.Password == _encrypt.EncodePasswordToBase64(login.Password)).FirstOrDefault();
+            TbUser Userlogin = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId && x.Password == _encrypt.EncodePasswordToBase64(login.Password)).FirstOrDefault()!;
             if (Userlogin != null)
             {
-                return true;
+                var token = GenerateToken(Userlogin);
+                return token;
             }
             else
             {
-                return false;
+                return "User EmailId or Password not matched";
             }
+        }
+        private string GenerateToken(TbUser user)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            TbUserRole role = _dbContext.TbUserRoles.Where(x => x.UserRoleId == user.UserRoleId).FirstOrDefault()!;
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier,user.EmailId!),
+                 new Claim(ClaimTypes.NameIdentifier,user.Password!),
+                 new Claim(ClaimTypes.Role,role.UserRoleName!)
+            };
+            var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
+                _configuration["Jwt:Audience"],
+                claims,
+                expires: DateTime.Now.AddMinutes(15),
+                signingCredentials: credentials);
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
         public bool ForgotPassword(Login login)
         {
