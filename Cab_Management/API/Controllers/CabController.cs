@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Persistence;
 using Service.Inteface;
@@ -9,17 +10,16 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "Cab_Admin")]
     public class CabController : ControllerBase
     {
         private readonly DbCabServicesContext dbCabServicesContext;
         private readonly ICabDetail cabAdmin;
-
         public CabController(DbCabServicesContext dbCabServicesContext, ICabDetail cabAdmin)
         {
             this.dbCabServicesContext = dbCabServicesContext;
             this.cabAdmin = cabAdmin;
         }
-
         [HttpPost]
         public JsonResult AddCab(TbCabDetail tbCabDetail)
         {
