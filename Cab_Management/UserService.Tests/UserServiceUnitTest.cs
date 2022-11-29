@@ -1,6 +1,7 @@
 
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Win32;
@@ -20,12 +21,13 @@ namespace UserDetailServiceTest
         DbCabServicesContext context;
         UserService Services;
         Mock<IEncrypt> encrypt;
+        Mock<IConfiguration> configuration;
         public UserServiceTest()
         {
             encrypt = new Mock<IEncrypt>();
             context = new DbCabServicesContext(dbContextOptions);
             context.Database.EnsureCreated();
-            Services = new UserService(context, encrypt.Object);
+            Services = new UserService(context, encrypt.Object,configuration.Object);
         }
         public void SeedDatabase()
         {
