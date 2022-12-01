@@ -1,20 +1,19 @@
-﻿using Domain;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Persistence;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain;
+using Microsoft.EntityFrameworkCore;
+using Persistence;
 
-namespace UserDetailService.Tests
+namespace CabManagementTestProject
 {
     public class DataBaseFixture : IDisposable
     {
-        private readonly DbContextOptions<DbCabServicesContext> dbContextOptions = new DbContextOptionsBuilder<DbCabServicesContext>()
+        private static DbContextOptions<DbCabServicesContext> dbContextOptions=new DbContextOptionsBuilder<DbCabServicesContext>()
         .UseInMemoryDatabase(databaseName: "db_CabServices")
-         .Options;
+        .Options;
         public DbCabServicesContext context;
 
         public DataBaseFixture()
@@ -25,13 +24,6 @@ namespace UserDetailService.Tests
         }
         public void SeedDatabase()
         {
-            var user = new List<TbUser>()
-            {
-                new TbUser(){UserId = 1, FirstName = "jyothi",LastName = "matam",EmailId = "jyothi@gmail.com",Password = "12345",UserRoleId = 1,CreateDate = DateTime.Now,UpdateDate = null,Status = 1},
-                new TbUser(){UserId = 15, FirstName = "avez",LastName = "md",EmailId = "avz@gmail.com",Password = "123456",UserRoleId = 2,CreateDate = DateTime.Now,UpdateDate = null,Status = 1}
-            };
-            context.TbUsers.AddRange(user);
-            context.SaveChanges();
             var tbCabDetails = new List<TbCabDetail>()
             {
 
@@ -41,9 +33,16 @@ namespace UserDetailService.Tests
             };
             context.TbCabDetails.AddRange(tbCabDetails);
             context.SaveChanges();
+            var tbUsers = new List<TbUser>()
+            {
+              new TbUser(){CreateDate=DateTime.Now,UserId=15,FirstName="Sahil",LastName="khan",EmailId="sh@gmail.com", UpdateDate=null,Password="1234",UserRoleId=2,Status=1},
+              new TbUser(){CreateDate=DateTime.Now,UserId=1,FirstName="Rahil",LastName="khan",EmailId="Rh@gmail.com",UpdateDate=null,Password="12345",UserRoleId=1,Status=0}
+            };
+            context.TbUsers.AddRange(tbUsers);
+            context.SaveChanges();
 
         }
-    
+
         public void Dispose()
         {
             context.Database.EnsureDeleted();
@@ -51,4 +50,3 @@ namespace UserDetailService.Tests
         }
     }
 }
-
