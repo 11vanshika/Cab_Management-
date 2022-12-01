@@ -14,10 +14,7 @@ namespace Service.Inteface
         public bool RemoveCab(TbCabDetail tbCabDetail);
         public bool CheckAdmin(TbCabDetail tbCabDetail);
         public bool CheckRegNum(TbCabDetail tbCabDetail);
-        bool CheckRegNum(string RegNum);
-
         List<TbCabDetail> GetTbCabDetails();
-
-        public bool UpdateCab(string RegistrationNun, int cabtype);
+        public bool UpdateCab(TbCabDetail tbCabDetail);
     }
 }

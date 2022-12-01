@@ -87,18 +87,18 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        public JsonResult UpdateCab(string RegistrationNun, int cabtype)
+        public JsonResult UpdateCab(TbCabDetail tbCabDetail)
         {
             try
             {
-                TbCabDetail cabDetail = dbCabServicesContext.TbCabDetails.Where(x=>x.RegistrationNun== RegistrationNun).FirstOrDefault();   
+                TbCabDetail cabDetail = dbCabServicesContext.TbCabDetails.Where(x=>x.RegistrationNun== tbCabDetail.RegistrationNun).FirstOrDefault();   
                 bool result = cabAdmin.CheckAdmin(cabDetail);
                 if (result == true)
                 {
-                    result = cabAdmin.CheckRegNum(RegistrationNun);
+                    result = cabAdmin.CheckRegNum(tbCabDetail);
                     if (result == true)
                     {
-                        result = cabAdmin.UpdateCab(RegistrationNun, cabtype);
+                        result = cabAdmin.UpdateCab(tbCabDetail);
                         if (result == true)
                         {
                             return new JsonResult(new CrudStatus() { Status = result, Message = "Updated cab Successfully" });

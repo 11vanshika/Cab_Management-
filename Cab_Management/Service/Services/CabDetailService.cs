@@ -25,8 +25,8 @@ namespace Service.Services
         public bool CheckAdmin(TbCabDetail tbCabDetail)
         {
             TbUser user = _dbCabServicesContext.TbUsers.Where(x => x.UserId == tbCabDetail.UserId).FirstOrDefault();
-            int Userrole = Convert.ToInt32(user.UserRoleId);
-            if (Userrole == 2)
+            int Userroleid = Convert.ToInt32(user.UserRoleId);
+            if (Userroleid == 2)
             {
                 return true;
             }
@@ -43,15 +43,6 @@ namespace Service.Services
             return true;
         }
 
-        public bool CheckRegNum(string RegNum)
-        {
-            TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == RegNum).FirstOrDefault();
-            if (cab == null)
-            {
-                return false;
-            }
-            return true;
-        }
         public bool AddCab(TbCabDetail tbCabDetail)
         {
                     tbCabDetail.CreateDate = DateTime.Now;
@@ -73,10 +64,10 @@ namespace Service.Services
             _dbCabServicesContext.SaveChanges();
             return true;
         }
-        public bool UpdateCab(string RegistrationNun, int cabtype)
+        public bool UpdateCab(TbCabDetail tbCabDetail)
         {
-            TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == RegistrationNun).FirstOrDefault();
-            cab.CabTypeId = cabtype;
+            TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault();
+            cab.CabTypeId = tbCabDetail.CabTypeId;
             cab.UpdateDate = DateTime.Now;
             _dbCabServicesContext.Entry(cab).State = EntityState.Modified;
             _dbCabServicesContext.SaveChanges();
