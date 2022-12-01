@@ -9,10 +9,8 @@ using Service.Inteface;
 using Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Mvc;
-
+using System.Security.Claims;
 
 namespace Service.Services
 {
@@ -22,7 +20,7 @@ namespace Service.Services
         private readonly IEncrypt _encrypt;
         private readonly IConfiguration _configuration;
 
-        public UserService(DbCabServicesContext dbcontext, IEncrypt encrypt, IConfiguration configuration)
+        public UserService(DbCabServicesContext dbcontext, IEncrypt encrypt,IConfiguration configuration)
         {
             _dbContext = dbcontext;
             _encrypt = encrypt;
@@ -33,6 +31,7 @@ namespace Service.Services
             List<TbUser> users = _dbContext.TbUsers.ToList();
             return users;
         }
+
         public bool CheckExtistUser(TbUser tblUser)
         {
             var Email = _dbContext.TbUsers.Where(x => x.EmailId == tblUser.EmailId).FirstOrDefault();
@@ -42,6 +41,7 @@ namespace Service.Services
             }
             return true;
         }
+
         public bool CheckExtistUser(Login login)
         {
             var Email = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId).FirstOrDefault();
@@ -60,6 +60,7 @@ namespace Service.Services
             }
             return false;
         }
+
         public bool Register(TbUser tblUser)
         {
             tblUser.Password = _encrypt.EncodePasswordToBase64(tblUser.Password);
@@ -70,12 +71,13 @@ namespace Service.Services
             _dbContext.SaveChanges();
             return true;
         }
+
         public string UserLogin(Login login)
-        {       
+        {
             TbUser Userlogin = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId && x.Password == _encrypt.EncodePasswordToBase64(login.Password)).FirstOrDefault()!;
             if (Userlogin != null)
             {
-               var token = GenerateToken(Userlogin);
+                var token = GenerateToken(Userlogin);
                 return token;
             }
             else
@@ -87,7 +89,7 @@ namespace Service.Services
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            TbUserRole role = _dbContext.TbUserRoles.Where(x=>x.UserRoleId == user.UserRoleId).FirstOrDefault()!;
+            TbUserRole role = _dbContext.TbUserRoles.Where(x => x.UserRoleId == user.UserRoleId).FirstOrDefault()!;
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier,user.EmailId!),
@@ -103,7 +105,7 @@ namespace Service.Services
         }
         public bool ForgotPassword(Login login)
         {
-            TbUser UserEmail = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId).SingleOrDefault()!;
+            TbUser UserEmail = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId).SingleOrDefault();
             UserEmail.Password = _encrypt.EncodePasswordToBase64(login.Password);
             UserEmail.UpdateDate = DateTime.Now;
             _dbContext.Entry(UserEmail).State = EntityState.Modified;
