@@ -8,13 +8,7 @@ using Service.Services;
 
 namespace CabManagementTestProject
 {
-    [CollectionDefinition("Cab Service")]
-    public class databaseaTests : ICollectionFixture<DataBaseFixture>
-    {
-
-    }
-    [Collection("Cab Service")]
-    public class CabServicesTest
+    public class CabServicesTest: IClassFixture<DataBaseFixture>
     {
        
         private readonly DataBaseFixture dataBaseFixture;
@@ -34,6 +28,7 @@ namespace CabManagementTestProject
            //Arrange
             var cab = new TbCabDetail()
             {
+
                 Cabid = 6,
                 RegistrationNun = "4569878",
                 CabTypeId = 1,
