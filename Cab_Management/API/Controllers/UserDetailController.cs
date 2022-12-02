@@ -44,6 +44,7 @@ namespace API.Controllers
                 return new JsonResult(ex.Message);
             }
         }
+
         [HttpPost()]
         [Route("Register")]
         public JsonResult UserRegister(TbUser tblUser)
@@ -67,6 +68,7 @@ namespace API.Controllers
                 return new JsonResult(ex.Message);
             }
         }
+
         [HttpPost()]
         [Route("Login")]
         public JsonResult UserLogin(Login login)

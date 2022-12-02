@@ -34,14 +34,11 @@ namespace UserDetailService.Tests
             context.SaveChanges();
             var tbCabDetails = new List<TbCabDetail>()
             {
-
                 new TbCabDetail(){Cabid=5,RegistrationNun="456987",CabTypeId=2,UpdateDate=null,Status=1,CreateDate=DateTime.Now,UserId=15,CabType=null,User=null},
                 new TbCabDetail(){Cabid=9,RegistrationNun="657890",CabTypeId=1,UpdateDate=null,Status=1,CreateDate=DateTime.Now,UserId=15,CabType=null,User=null}
-
             };
             context.TbCabDetails.AddRange(tbCabDetails);
             context.SaveChanges();
-
         }
     
         public void Dispose()
