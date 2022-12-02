@@ -13,7 +13,8 @@ namespace Service.Inteface
     {
         public List<TbBooking> GetTbBookingDetails();
         public List<TbTripDetail> GetTbTripDetails();
-        public bool checkCab(TbBooking Booking);
+        public bool checkCabForConfirmBooking(TbBooking Booking);
+        public bool checkCabForBooking(TbBooking tbBooking);
         public bool bookingCab(TbBooking Booking);
         public bool ConfirmBooking(TbBooking tbBooking);
         public bool UpdateCabStatus(TbBooking tbBooking);

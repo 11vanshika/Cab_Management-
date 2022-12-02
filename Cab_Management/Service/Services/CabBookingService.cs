@@ -29,7 +29,7 @@ namespace Service.Services
             List<TbTripDetail> tbTripDetails = _dbCabServicesContext.TbTripDetails.ToList();
             return tbTripDetails;
         }
-        public bool checkCab(TbBooking tbBooking)
+        public bool checkCabForConfirmBooking(TbBooking tbBooking)
         {
             TbBooking booking = _dbCabServicesContext.TbBookings.Where(x => x.BookingId == tbBooking.BookingId).FirstOrDefault()!;
             int tbCab = Convert.ToInt32(booking.CabId);
@@ -41,6 +41,18 @@ namespace Service.Services
             }
             return false;
         }
+
+        public bool checkCabForBooking(TbBooking tbBooking)
+        {
+            TbCabDetail cabDetail = _dbCabServicesContext.TbCabDetails.Where(x => x.Cabid == tbBooking.CabId).FirstOrDefault()!;
+            int CabStatus = Convert.ToInt32(cabDetail.Status);
+            if (CabStatus == 1)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public bool bookingCab(TbBooking tbBooking)
         {
             tbBooking.CreateDate = DateTime.Now;
