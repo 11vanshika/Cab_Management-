@@ -23,6 +23,10 @@ public partial class TbUser
 
     public int? Status { get; set; }
 
+    public string? MobileNumber { get; set; }
+
+    public virtual ICollection<TbBooking> TbBookings { get; } = new List<TbBooking>();
+
     public virtual ICollection<TbCabDetail> TbCabDetails { get; } = new List<TbCabDetail>();
 
     public virtual TbUserRole? UserRole { get; set; }

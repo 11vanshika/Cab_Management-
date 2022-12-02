@@ -21,5 +21,7 @@ public partial class TbCabDetail
 
     public virtual TbCabType? CabType { get; set; }
 
+    public virtual ICollection<TbBooking> TbBookings { get; } = new List<TbBooking>();
+
     public virtual TbUser? User { get; set; }
 }
