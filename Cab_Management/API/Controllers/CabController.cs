@@ -22,6 +22,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Route("AddCabDetails")]
         public JsonResult AddCab(TbCabDetail tbCabDetail)
         {
             try
@@ -48,6 +49,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        [Route("GetCabDetails")]
         public JsonResult GetTbCabDetails()
         {
             try
@@ -61,6 +63,7 @@ namespace API.Controllers
         }
 
         [HttpDelete]
+        [Route("DeleteCab")]
         public JsonResult RemoveCab(TbCabDetail tbCabDetail)
         {
             try
@@ -88,6 +91,7 @@ namespace API.Controllers
         }
 
         [HttpPut]
+        [Route("UpdateCabDetails")]
         public JsonResult UpdateCab(TbCabDetail tbCabDetail)
         {
             try

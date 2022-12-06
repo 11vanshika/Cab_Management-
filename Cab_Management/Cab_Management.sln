@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence", "Persistence\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{5962896F-4964-4260-B0F3-1AEBC9584317}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Tests", "UserService.Tests\UserService.Tests.csproj", "{E7C2B966-4582-4531-A472-42D031A32D88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service.UnitTests", "UserService.Tests\Service.UnitTests.csproj", "{E7C2B966-4582-4531-A472-42D031A32D88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
