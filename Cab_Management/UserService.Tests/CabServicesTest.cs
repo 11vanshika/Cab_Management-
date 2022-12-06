@@ -95,8 +95,7 @@ namespace CabManagementTestProject
                 RegistrationNun = "456987",
                 CabTypeId = 1,
             };
-           
-          
+
             //Act
             var result = service.UpdateCab(updatecab);
 
@@ -118,9 +117,9 @@ namespace CabManagementTestProject
 
             //ACT
             var result = service.CheckRegNum(RegNum);
+
             //Assert
             Assert.True(result);
-            
         }
         [Fact]
         public void newCheckRegNum()
@@ -130,13 +129,13 @@ namespace CabManagementTestProject
             {
                 RegistrationNun = "45698",
                 CabTypeId = 1
-
             };
+
             //Act
             var result = service.CheckRegNum(regNum);
+
             //Assert
-            Assert.False(result);
-           
+            Assert.False(result);       
         }
 
         [Fact]
@@ -147,11 +146,12 @@ namespace CabManagementTestProject
             {
                 UserId = 15,
             };
+
             //Act
             var result = service.CheckAdmin(Admin);
+
             //Assert
-            Assert.True(result);
-            
+            Assert.True(result);  
         }
 
         [Fact]
@@ -162,8 +162,10 @@ namespace CabManagementTestProject
             {
                 UserId = 1,
             };
+
             //Act
             var result = service.CheckAdmin(Admin);
+
             //Assert
             Assert.False(result);
         }

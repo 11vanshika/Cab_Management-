@@ -20,6 +20,7 @@ namespace API.Controllers
             this.dbCabServicesContext = dbCabServicesContext;
             this.cabAdmin = cabAdmin;
         }
+
         [HttpPost]
         [Route("AddCabDetails")]
         public JsonResult AddCab(TbCabDetail tbCabDetail)

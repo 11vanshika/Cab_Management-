@@ -25,6 +25,7 @@ namespace Service.Services
             _encrypt = encrypt;
             _generateToken = generateToken;
         }
+
         public List<TbUser> GetUsersDetails()
         {
             List<TbUser> users = _dbContext.TbUsers.ToList();

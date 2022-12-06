@@ -9,15 +9,19 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
 
 namespace Service.Services
 {
     public class CabBookingService : ICabBooking
     {
         private readonly DbCabServicesContext _dbCabServicesContext;
-        public CabBookingService(DbCabServicesContext dbcontext)
+        private readonly ISendNotification _sendNotification;
+        public CabBookingService(DbCabServicesContext dbcontext, ISendNotification sendNotification)
         {
             _dbCabServicesContext = dbcontext;
+            _sendNotification = sendNotification;
         }
         public List<TbBooking> GetTbBookingDetails()
         {
@@ -44,7 +48,8 @@ namespace Service.Services
 
         public bool checkCabForBooking(TbBooking tbBooking)
         {
-            TbCabDetail cabDetail = _dbCabServicesContext.TbCabDetails.Where(x => x.Cabid == tbBooking.CabId).FirstOrDefault()!;
+            TbBooking booking = _dbCabServicesContext.TbBookings.Where(x =>x.BookingId == tbBooking.BookingId).FirstOrDefault()!;
+            TbCabDetail cabDetail = _dbCabServicesContext.TbCabDetails.Where(x => x.Cabid == booking.CabId).FirstOrDefault()!;
             int CabStatus = Convert.ToInt32(cabDetail.Status);
             if (CabStatus == 1)
             {
@@ -73,6 +78,9 @@ namespace Service.Services
                     booking.Status = 1;
                     _dbCabServicesContext.Entry(booking).State = EntityState.Modified;
                     _dbCabServicesContext.SaveChanges();
+                    SendingNotification sendingNotification = GenerateMessage(tbBooking);
+                    _sendNotification.SendWhatsAppMessage(sendingNotification);
+                    _sendNotification.SendSMSMessage(sendingNotification);
                     return true;
                 }
                 else
@@ -144,7 +152,6 @@ namespace Service.Services
                                     }).ToList();
             return list.ToList();
         }
-
         public bool RideCompleted(TbBooking tbBooking)
         {
             TbBooking booking = _dbCabServicesContext.TbBookings.Where(x => x.BookingId == tbBooking.BookingId).FirstOrDefault()!;
@@ -174,6 +181,16 @@ namespace Service.Services
             {
                 return false;
             }
+        }
+        public SendingNotification GenerateMessage(TbBooking tbBooking)
+        {
+            SendingNotification sendingNotification = new SendingNotification();
+            TbBooking tbBooking1 = _dbCabServicesContext.TbBookings.Where(x => x.BookingId == tbBooking.BookingId).FirstOrDefault();
+            TbCabDetail tbCabDetail = _dbCabServicesContext.TbCabDetails.Where(x=>x.Cabid == tbBooking1.CabId).FirstOrDefault();  
+            TbUser tbUser = _dbCabServicesContext.TbUsers.Where(x => x.UserId == tbBooking1.UserId).FirstOrDefault();
+            sendingNotification.Message = "Hello" + tbUser.FirstName + " your Booking Confirm " + " Cab Number is " + tbCabDetail.RegistrationNun +" Booking Id is " + tbBooking1.BookingId;
+            sendingNotification.MobileNumber = tbUser.MobileNumber.ToString();
+            return sendingNotification;
         }
     }
 }
