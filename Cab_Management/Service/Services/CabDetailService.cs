@@ -41,6 +41,7 @@ namespace Service.Services
                 return false;
             }
             return true;
+
         }
 
         public bool AddCab(TbCabDetail tbCabDetail)
@@ -52,11 +53,13 @@ namespace Service.Services
                     _dbCabServicesContext.SaveChanges();
                     return true;
         }
+
         public List<TbCabDetail> GetTbCabDetails()
         {
             List<TbCabDetail> tbCabDetails = _dbCabServicesContext.TbCabDetails.ToList();
             return tbCabDetails;
         }
+
         public bool RemoveCab(TbCabDetail tbCabDetail)
         {
             TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault();
@@ -64,6 +67,7 @@ namespace Service.Services
             _dbCabServicesContext.SaveChanges();
             return true;
         }
+
         public bool UpdateCab(TbCabDetail tbCabDetail)
         {
             TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault();
