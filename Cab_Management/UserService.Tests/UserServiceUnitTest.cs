@@ -27,17 +27,20 @@ namespace UserDetailService.Test
     private readonly DataBaseFixture _fixture;
     private readonly UserService userService;
     private readonly Mock<IEncrypt> encrypt;
-    private readonly IConfiguration configuration;
+    private readonly Mock<IGenerateToken> generateToken;
+
         public UserServiceTests(DataBaseFixture fixture)
         {
             _fixture = fixture;
             encrypt = new Mock<IEncrypt>();
-            configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(@"appsettings.json", false, false)
-                .AddEnvironmentVariables()
-                .Build();
-            userService = new UserService(_fixture.context, encrypt.Object, configuration);
+            generateToken = new Mock<IGenerateToken>();
+            //configuration = new ConfigurationBuilder()
+            //    .SetBasePath(Directory.GetCurrentDirectory())
+            //    .AddJsonFile(@"appsettings.json", false, false)
+            //    .AddEnvironmentVariables()
+            //    .Build();
+            //userService = new UserService(_fixture.context, encrypt.Object, generateToken.Object);
+            userService = new UserService(_fixture.context, encrypt.Object, generateToken.Object);
         }
 
 
