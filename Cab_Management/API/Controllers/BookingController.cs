@@ -11,12 +11,14 @@ namespace API.Controllers
     [ApiController]
     public class BookingController : ControllerBase
     {
-        private readonly DbCabServicesContext dbCabServicesContext;
-        private readonly ICabBooking cabbooking;
-        public BookingController(DbCabServicesContext dbCabServicesContext, ICabBooking cabbooking)
+        private readonly DbCabServicesContext _dbCabServicesContext;
+        private readonly ICabBooking _cabbooking;
+        private readonly ISendNotification _sendNotification;
+        public BookingController(DbCabServicesContext dbCabServicesContext, ICabBooking cabbooking, ISendNotification sendNotification)
         {
-            this.dbCabServicesContext = dbCabServicesContext;
-            this.cabbooking = cabbooking;
+            _dbCabServicesContext = dbCabServicesContext;
+            _cabbooking = cabbooking;
+            _sendNotification = sendNotification;
         }
         [HttpGet]
         [Route("GetTripDetails")]
@@ -25,7 +27,7 @@ namespace API.Controllers
         {
             try
             {
-                return new JsonResult(cabbooking.GetTbTripDetails().ToList());
+                return new JsonResult(_cabbooking.GetTbTripDetails().ToList());
             }
             catch (Exception ex)
             {
@@ -39,7 +41,7 @@ namespace API.Controllers
         {
             try
             {
-                return new JsonResult(cabbooking.GetAvailableCabDetails().ToList());
+                return new JsonResult(_cabbooking.GetAvailableCabDetails().ToList());
             }
             catch (Exception ex)
             {
@@ -53,10 +55,10 @@ namespace API.Controllers
         {
             try
             {
-                bool result = cabbooking.checkCabForBooking(tbBooking);
+                bool result = _cabbooking.checkCabForBooking(tbBooking);
                 if (result == true)
                 {
-                    result = cabbooking.bookingCab(tbBooking);
+                    result = _cabbooking.bookingCab(tbBooking);
                     if (result == true)
                     {
                         return new JsonResult(new CrudStatus() { Status = result, Message = "Booking Request Send Successfully" });
@@ -76,13 +78,13 @@ namespace API.Controllers
         {
             try
             {
-                bool result = cabbooking.checkCabForConfirmBooking(tbBooking);
+                bool result = _cabbooking.checkCabForConfirmBooking(tbBooking);
                 if (result == true)
                 {
-                    result = cabbooking.ConfirmBooking(tbBooking);
+                      result = _cabbooking.UpdateCabStatus(tbBooking);
                     if (result == true)
                     {
-                        result = cabbooking.UpdateCabStatus(tbBooking);
+                        result = _cabbooking.ConfirmBooking(tbBooking);
                         if (result == true)
                         {
                             return new JsonResult(new CrudStatus() { Status = result, Message = "Booking Confirmed Successfully" });
@@ -102,12 +104,12 @@ namespace API.Controllers
         }
         [HttpPut]
         [Route("RideCompleted")]
-        [Authorize(Policy = "Customer")]
+       [Authorize(Policy = "Customer")]
         public JsonResult RideCompleted(TbBooking tbBooking)
         {
             try
             {
-                bool result = cabbooking.RideCompleted(tbBooking);
+                bool result = _cabbooking.RideCompleted(tbBooking);
                 if (result == true)
                 {
                     return new JsonResult(new CrudStatus() { Status = result, Message = "Ride completed Successfully" });
@@ -126,7 +128,7 @@ namespace API.Controllers
         {
             try
             {
-                return new JsonResult(cabbooking.GetPendingBooking().ToList());
+                return new JsonResult(_cabbooking.GetPendingBooking().ToList());
             }
             catch (Exception ex)
             {
@@ -140,7 +142,7 @@ namespace API.Controllers
         {
             try
             {
-                return new JsonResult(cabbooking.GetTbBookingDetails().ToList());
+                return new JsonResult(_cabbooking.GetTbBookingDetails().ToList());
             }
             catch (Exception ex)
             {

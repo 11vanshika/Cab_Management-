@@ -41,6 +41,7 @@ namespace Service.Services
                 return false;
             }
             return true;
+
         }
 
         public bool AddCab(TbCabDetail tbCabDetail)
