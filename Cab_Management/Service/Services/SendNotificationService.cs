@@ -24,13 +24,15 @@ namespace Service.Services
         {
             if(sendingNotification != null) { 
                 var accountSid = "AC65cf2916278f8df92873f0da47b6f03e";
-                var authToken = "08f02ebb4f2bb7c191bba0ad659ddec4";
+                var authToken = "e9e4bf7e5186612df954f24d9cfa0a65";
                 TwilioClient.Init(accountSid, authToken);
                 var messageOptions = new CreateMessageOptions(
                 new PhoneNumber("Whatsapp:91"+sendingNotification.MobileNumber));
                 messageOptions.From = new PhoneNumber("whatsapp:+1(415)523-8886");
                 messageOptions.Body = sendingNotification.Message;
-                var message1 = MessageResource.Create(messageOptions);
+               // var message = MessageResource.Create(messageOptions);
+                 var message = MessageResource.Create(messageOptions);
+                Console.WriteLine(message.Body);
                 return true;
             }
             else
@@ -42,13 +44,15 @@ namespace Service.Services
         {
            if (sendingNotification != null) {
                 var accountSid = "AC65cf2916278f8df92873f0da47b6f03e";
-                var authToken = "08f02ebb4f2bb7c191bba0ad659ddec4";
+                var authToken = "e9e4bf7e5186612df954f24d9cfa0a65";
                 TwilioClient.Init(accountSid, authToken);
                 var messageOptions = new CreateMessageOptions(
                 new PhoneNumber("91" + sendingNotification.MobileNumber));
                 messageOptions.MessagingServiceSid = "MG8221dbe8e727556d0189ac7baa924d86";
-                messageOptions.Body = "booking confirmed";
+               // messageOptions.Body = "booking confirmed";
+                messageOptions.Body = sendingNotification.Message;
                 var message = MessageResource.Create(messageOptions);
+                Console.WriteLine(message.Body);
                 return true;
             }
             else

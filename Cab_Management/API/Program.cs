@@ -24,6 +24,7 @@ builder.Services.AddScoped<IUserDetails, UserService>();
 builder.Services.AddScoped<IEncrypt, Encrypt>();
 builder.Services.AddScoped<ICabDetail, CabDetailService>();
 builder.Services.AddScoped<ICabBooking, CabBookingService>();
+builder.Services.AddScoped<IGenerateToken , GenerateTokenServices>();
 builder.Services.AddScoped<ISendNotification, SendNotificationService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
