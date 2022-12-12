@@ -72,23 +72,20 @@ namespace UserDetailService.Test
 
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            
+            generateToken.Setup(x => x.GenerateToken(ExistingUser)).Returns("login SuccessFully");
             var result = userService.Register(ExistingUser);
             //Assert
-            Assert.True(result);  
+            Assert.NotNull(result);  
         }
         
         [Fact]
         public void CheckExistingUser_ReturnsGoodResponse()
         {
             //Arrange
-            var ExistingUser = new TbUser()
+            var ExistingUser = new Registration()
             {
-                FirstName = "jyothi",
-                LastName = "matam",
                 EmailId = "jyothi@gmail.com",
                 Password = "12345",
-                UserRoleId = 1
             };
 
             //Act
@@ -98,11 +95,12 @@ namespace UserDetailService.Test
             //Assert
             Assert.True(result);    
         }
+
         [Fact]
         public void CheckExistingUser_Returnsok()
         {
             //Arrange
-            var ExistingUser = new Login()
+            var ExistingUser = new Registration()
             {
                 EmailId = "jyothi@gmail.com",
                 Password = "12345",    
@@ -116,11 +114,12 @@ namespace UserDetailService.Test
 
             
         }
+
         [Fact]
         public void CheckExistingUser_WrongPassword_Returnsok()
         {
             //Arrange
-            var ExistingUser = new TbUser()
+            var ExistingUser = new Registration()
             {
                 EmailId = "jyothi@gmail.com",
                 Password = "123456",
@@ -133,52 +132,54 @@ namespace UserDetailService.Test
             //Assert
             Assert.True(result);     
         }
+
         [Fact]
         public void ConfirmPassword_CorrectPassword_Returnsok()
         {
             //Arrange
-            var ExistingUser = new Login()
-            {
-                EmailId = "jyothi@gmail.com",
-                Password = "12345",
-
-            };
-
-            //Act
-            encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            var result = userService.CheckConfirmPassword(ExistingUser);
-
-            //Assert
-            Assert.False(result);
-
-            
-        }
-        [Fact]
-        public void ConfirmPassword_WrongPassword_Returnsok()
-        {
-            //Arrange 
-            var ExistingUser = new Login()
-            {
-                EmailId = "jyothi@gmail.com",
-                Password = "123456",
-            };
-
-            //Act
-            encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            var result = userService.CheckConfirmPassword(ExistingUser);
-
-            //Assert
-            Assert.False(result);   
-        }
-        [Fact]
-        public void UserLogin_Returnsok()
-        {
-            //Arrange
-            var ExistingUser = new Login()
+            var ExistingUser = new Registration()
             {
                 EmailId = "jyothi@gmail.com",
                 Password = "12345",
                 ConfirmPassword = "12345"
+
+            };
+
+            //Act
+            encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
+            var result = userService.ConfirmPassword(ExistingUser);
+
+            //Assert
+            Assert.True(result);           
+        }
+
+        [Fact]
+        public void ConfirmPassword_WrongPassword_Returnsok()
+        {
+            //Arrange 
+            var ExistingUser = new Registration()
+            {
+                EmailId = "jyothi@gmail.com",
+                Password = "123456",
+                ConfirmPassword = "12345"
+            };
+
+            //Act
+            encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
+            var result = userService.ConfirmPassword(ExistingUser);
+
+            //Assert
+            Assert.False(result);   
+        }
+
+        [Fact]
+        public void UserLogin_Returnsok()
+        {
+            //Arrange
+            var ExistingUser = new TbUser()
+            {
+                EmailId = "jyothi@gmail.com",
+                Password = "12345"
             };
 
             //Act
@@ -194,11 +195,10 @@ namespace UserDetailService.Test
         {
             //Arrange
           
-            var User = new Login()
+            var User = new TbUser()
             {
                 EmailId = "anshika@gmail.com",
-                Password = "12345",
-                ConfirmPassword = "12345"
+                Password = "12345"
             };
             var expected = "User EmailId or Password not matched";
 
@@ -214,11 +214,10 @@ namespace UserDetailService.Test
         public void UserLogin_WrongPassword_ReturnsbadResponse()
         {
             //Arrange    
-            var ExistingUser = new Login()
+            var ExistingUser = new TbUser()
             {
                 EmailId = "anshika@gmail.com",
-                Password = "123456",
-                ConfirmPassword = "12345"
+                Password = "123456"
 
             };
             var expected = "User EmailId or Password not matched";
@@ -235,11 +234,10 @@ namespace UserDetailService.Test
         public void ForgotPassword__ReturnsGoodResponse()
         {
             //Arrange
-            var ExistingUser = new Login()
+            var ExistingUser = new ForgetPassword()
             {
                 EmailId = "jyothi@gmail.com",
-                Password = "3456",
-                ConfirmPassword = "3456"
+                Password = "3456"
             };
 
             //Act

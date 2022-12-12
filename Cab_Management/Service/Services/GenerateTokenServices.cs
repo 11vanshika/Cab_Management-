@@ -18,7 +18,6 @@ namespace Service.Services
     {
         private readonly DbCabServicesContext _dbContext;
         private readonly IConfiguration _configuration;
-
         public GenerateTokenServices(DbCabServicesContext dbcontext, IConfiguration configuration)
         {
             _dbContext = dbcontext;

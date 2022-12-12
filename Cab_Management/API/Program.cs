@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
+using Repository;
 using Service.Inteface;
 using Service.Services;
 using System.Text;
@@ -50,6 +51,7 @@ builder.Services.AddAuthorization(options =>
          policy => policy.RequireRole("Customer"));
 });
 
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

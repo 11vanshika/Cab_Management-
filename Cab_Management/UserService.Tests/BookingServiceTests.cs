@@ -24,6 +24,7 @@ namespace Bookingservice.Tests
             notification = new Mock<ISendNotification>();
             bookingService = new CabBookingService(fixture.context, notification.Object);
         }
+
         [Fact]
         public void GetAll_BookingDetails()
         {
@@ -35,6 +36,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.Equal(count, items.Count());
         }
+
         [Fact]
         public void GetAll_TripDetails()
         {
@@ -46,6 +48,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.Equal(count, items.Count());
         }
+
         [Fact]
         public void CheckCabBookings_ReturnsGoodResponse()
         {
@@ -60,6 +63,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.True(result);
         }
+
         [Fact]
         public void CheckCabBookings_ReturnsBadResponse()
         {
@@ -74,6 +78,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.False(result);
         }
+
         [Fact]
         public void CheckCabForConfirmBooking()
         {
@@ -88,6 +93,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.True(result);
         }
+
         [Fact]
         public void CheckCabForConfirmBooking_ReturnFalse()
         {
@@ -101,6 +107,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.False(result);
         }
+
         [Fact]
         public void BookingCab()
         {
@@ -117,6 +124,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.True(result);
         }
+
         [Fact]
         public void ConfirmBooking_Accept()
         {
@@ -135,6 +143,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.True(result);
         }
+
         [Fact]
         public void ConfirmBooking_Rejected()
         {
@@ -153,6 +162,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.False(result);
         }
+
         [Fact]
         public void ConfirmBooking_Pending()
         {
@@ -171,6 +181,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.False(result);
         }
+
         [Fact]
         public void UpdateCabStatus_ReturnsTrue()
         {
@@ -185,6 +196,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.True(result);
         }
+
         [Fact]
         public void UpdateCabStatus_ReturnsFalse()
         {
@@ -199,6 +211,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.False(result);
         }
+
         [Fact]
         public void GetAvailableCabDetail()
         {
@@ -210,6 +223,7 @@ namespace Bookingservice.Tests
             var items = Assert.IsType<List<CabDisplay>>(result);
             Assert.Equal(expected, items.Count);
         }
+
         [Fact]
         public void GetPendingBooking()
         {
@@ -221,6 +235,7 @@ namespace Bookingservice.Tests
             var items = Assert.IsType<List<TbBooking>>(result);
             Assert.Equal(expected, items.Count);
         }
+
         [Fact]
         public void RideCompleted_ReturnTrue()
         {
@@ -235,6 +250,7 @@ namespace Bookingservice.Tests
             //Assert
             Assert.True(result);
         }
+
         [Fact]
         public void RideCompleted_ReturnFalse()
         {

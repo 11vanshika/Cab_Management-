@@ -45,7 +45,6 @@ namespace Service.Services
             }
             return false;
         }
-
         public bool checkCabForBooking(TbBooking tbBooking)
         {
             TbBooking booking = _dbCabServicesContext.TbBookings.Where(x =>x.BookingId == tbBooking.BookingId).FirstOrDefault()!;
@@ -57,7 +56,6 @@ namespace Service.Services
             }
             return false;
         }
-
         public bool bookingCab(TbBooking tbBooking)
         {
             tbBooking.CreateDate = DateTime.Now;
