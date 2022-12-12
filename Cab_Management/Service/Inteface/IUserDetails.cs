@@ -16,7 +16,9 @@ namespace Service.Inteface
 
        public bool CheckExtistUser(Registration user);
 
-        public string UserLogin(TbUser login);  
+       public bool CheckConfirmPassword(Login login);
+
+        public Tuple<string, int> UserLogin(TbUser login);
 
         public bool ForgotPassword(ForgetPassword changePassword);
        

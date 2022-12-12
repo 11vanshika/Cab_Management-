@@ -26,16 +26,17 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserDetailsController : ControllerBase
+    public class UserDetailsController : BaseController
     {
         private readonly DbCabServicesContext dbCabservice;
         private readonly IUserDetails IuserDetails;
         private readonly IConfiguration _configuration;
+        private const string Sessionkey = "userId";
         private readonly IMapper _mapper; 
 
-        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration , IMapper mapper)
+        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration , IMapper mapper):base(dbContext)
         {
-            dbCabservice = dbContext;
+            dbCabservice=dbContext;
             IuserDetails = iuserDetails;
             _configuration = configuration; 
             _mapper = mapper;
@@ -118,10 +119,13 @@ namespace API.Controllers
             try
             {
                 var logIndto = Automapper<Login, TbUser>.MapClass(login);
-                string result=IuserDetails.UserLogin(logIndto) ;
+                var result=IuserDetails.UserLogin(logIndto) ;
                 if (result != null)
                 {
-                    return new JsonResult(new CrudStatus() { Status = true, Message = result });
+                    //inbuild func to set a value
+                    HttpContext.Session.SetInt32(Sessionkey, result.Item2);
+                    loginID(Sessionkey);
+                    return new JsonResult(new CrudStatus() { Status = true, Message = result.Item1 });
                 }
                 else
                 {

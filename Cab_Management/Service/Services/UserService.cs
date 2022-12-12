@@ -47,6 +47,7 @@ namespace Service.Services
                 return false;
             }
             return true;
+     
         }
         public string Register(TbUser tblUser)
         {
@@ -59,17 +60,20 @@ namespace Service.Services
             var token = _generateToken.GenerateToken(tblUser);
             return token;
         }
-        public string UserLogin(TbUser login)
+
+        public Tuple<string, int> UserLogin(TbUser login)
         {
             TbUser Userlogin = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId && x.Password == _encrypt.EncodePasswordToBase64(login.Password)).FirstOrDefault()!;
             if (Userlogin != null)
             {
+                //var token = GenerateToken(Userlogin);
                 var token = _generateToken.GenerateToken(Userlogin);
-                return token;
+                Tuple<string, int> id = new Tuple<string, int>(token, Userlogin.UserId);
+                return id;
             }
             else
             {
-                return "User EmailId or Password not matched";
+                return null!;
             }
         }
         public bool ForgotPassword(ForgetPassword login)

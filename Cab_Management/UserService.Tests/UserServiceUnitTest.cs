@@ -34,12 +34,6 @@ namespace UserDetailService.Test
             _fixture = fixture;
             encrypt = new Mock<IEncrypt>();
             generateToken = new Mock<IGenerateToken>();
-            //configuration = new ConfigurationBuilder()
-            //    .SetBasePath(Directory.GetCurrentDirectory())
-            //    .AddJsonFile(@"appsettings.json", false, false)
-            //    .AddEnvironmentVariables()
-            //    .Build();
-            //userService = new UserService(_fixture.context, encrypt.Object, generateToken.Object);
             userService = new UserService(_fixture.context, encrypt.Object, generateToken.Object);
         }
 
@@ -187,14 +181,13 @@ namespace UserDetailService.Test
             var result = userService.UserLogin(ExistingUser);
 
             //Assert
-            Assert.NotNull(result);  
+            Assert.NotNull(result.Item2);  
         }
 
         [Fact]
         public void UserLogin_WrongEmail_ReturnsbadResponse()
         {
-            //Arrange
-          
+            //Arrange         
             var User = new TbUser()
             {
                 EmailId = "anshika@gmail.com",
@@ -207,7 +200,7 @@ namespace UserDetailService.Test
             var result = userService.UserLogin(User);
 
             //Assert
-            Assert.Equal(expected, result);
+            Assert.Null(result);
         }
 
         [Fact]
@@ -227,9 +220,9 @@ namespace UserDetailService.Test
             var result = userService.UserLogin(ExistingUser);
 
             //Assert
-            Assert.Equal(expected,result);
+            Assert.Null(result);
         }
-
+       
         [Fact]
         public void ForgotPassword__ReturnsGoodResponse()
         {
