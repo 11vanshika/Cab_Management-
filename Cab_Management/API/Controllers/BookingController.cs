@@ -9,14 +9,13 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BookingController : ControllerBase
+    public class BookingController : BaseController
     {
         private readonly DbCabServicesContext _dbCabServicesContext;
         private readonly ICabBooking _cabbooking;
         private readonly ISendNotification _sendNotification;
-        public BookingController(DbCabServicesContext dbCabServicesContext, ICabBooking cabbooking, ISendNotification sendNotification)
+        public BookingController(DbCabServicesContext dbCabServicesContext, ICabBooking cabbooking, ISendNotification sendNotification):base(dbCabServicesContext)
         {
-            _dbCabServicesContext = dbCabServicesContext;
             _cabbooking = cabbooking;
             _sendNotification = sendNotification;
         }

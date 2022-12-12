@@ -26,6 +26,7 @@ builder.Services.AddScoped<ICabDetail, CabDetailService>();
 builder.Services.AddScoped<ICabBooking, CabBookingService>();
 builder.Services.AddScoped<IGenerateToken , GenerateTokenServices>();
 builder.Services.AddScoped<ISendNotification, SendNotificationService>();
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -49,6 +50,12 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Customer",
          policy => policy.RequireRole("Customer"));
 });
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(100);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
@@ -62,7 +69,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseSession();
 app.MapControllers();
 
 app.Run();

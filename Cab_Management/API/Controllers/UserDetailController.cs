@@ -18,15 +18,15 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserDetailsController : ControllerBase
+    public class UserDetailsController : BaseController
     {
         private readonly DbCabServicesContext dbCabservice;
         private readonly IUserDetails IuserDetails;
         private readonly IConfiguration _configuration;
-
-        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration)
+        private const string Sessionkey = "userId";
+        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration):base(dbContext)
         {
-            dbCabservice = dbContext;
+
             IuserDetails = iuserDetails;
             _configuration = configuration; 
         }
@@ -75,10 +75,13 @@ namespace API.Controllers
         {
             try
             {
-                string result=IuserDetails.UserLogin(login) ;
+                var result=IuserDetails.UserLogin(login) ;
                 if (result != null)
                 {
-                    return new JsonResult(new CrudStatus() { Status = true, Message = result });
+                    //inbuild func to set a value
+                    HttpContext.Session.SetInt32(Sessionkey, result.Item2);
+                    loginID(Sessionkey);
+                    return new JsonResult(new CrudStatus() { Status = true, Message = result.Item1 });
                 }
                 else
                 {

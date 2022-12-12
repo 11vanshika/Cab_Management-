@@ -48,6 +48,7 @@ namespace Service.Services
                 return false;
             }
             return true;
+     
         }
         public bool CheckConfirmPassword(Login login)
         {
@@ -67,17 +68,19 @@ namespace Service.Services
             _dbContext.SaveChanges();
             return true;
         }
-        public string UserLogin(Login login)
+        public Tuple<string, int> UserLogin(Login login)
         {
             TbUser Userlogin = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId && x.Password == _encrypt.EncodePasswordToBase64(login.Password)).FirstOrDefault()!;
             if (Userlogin != null)
             {
+                //var token = GenerateToken(Userlogin);
                 var token = _generateToken.GenerateToken(Userlogin);
-                return token;
+                Tuple<string, int> id = new Tuple<string, int>(token, Userlogin.UserId);
+                return id;
             }
             else
             {
-                return "User EmailId or Password not matched";
+                return null!;
             }
         }
         public bool ForgotPassword(Login login)

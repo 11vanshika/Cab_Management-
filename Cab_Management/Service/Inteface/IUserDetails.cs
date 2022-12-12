@@ -17,11 +17,9 @@ namespace Service.Inteface
 
        public bool CheckConfirmPassword(Login login);
 
-        public string UserLogin(Login login);  
+        public Tuple<string, int> UserLogin(Login login);
 
-        public bool ForgotPassword(Login login);
-
-       
+        public bool ForgotPassword(Login login);   
 
     }
 }
