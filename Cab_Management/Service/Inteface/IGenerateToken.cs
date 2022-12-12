@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Service.Inteface
 {
     public interface IGenerateToken
-      {
+    {
         string GenerateToken(TbUser user);
     }
 }

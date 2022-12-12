@@ -25,22 +25,21 @@ namespace Service.Services
             _encrypt = encrypt;
             _generateToken = generateToken;
         }
-
         public List<TbUser> GetUsersDetails()
         {
             List<TbUser> users = _dbContext.TbUsers.ToList();
             return users;
         }
-        public bool CheckExtistUser(TbUser tblUser)
+        public List<UserView> GetUsersDetail()
         {
-            var Email = _dbContext.TbUsers.Where(x => x.EmailId == tblUser.EmailId).FirstOrDefault();
-            if (Email == null)
-            {
-                return false;
-            }
-            return true;
+            List<UserView> users = _dbContext.UserViews.ToList();
+            return users;
         }
-        public bool CheckExtistUser(Login login)
+        public bool ConfirmPassword(Registration tblUser)
+        {
+            return tblUser.Password == tblUser.ConfirmPassword;
+        }
+        public bool CheckExtistUser(Registration login)
         {
             var Email = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId).FirstOrDefault();
             if (Email == null)
@@ -49,15 +48,7 @@ namespace Service.Services
             }
             return true;
         }
-        public bool CheckConfirmPassword(Login login)
-        {
-            if (login.Password == login.ConfirmPassword)
-            {
-                return true;
-            }
-            return false;
-        }
-        public bool Register(TbUser tblUser)
+        public string Register(TbUser tblUser)
         {
             tblUser.Password = _encrypt.EncodePasswordToBase64(tblUser.Password);
             tblUser.CreateDate = DateTime.Now;
@@ -65,9 +56,10 @@ namespace Service.Services
             tblUser.Status = 1;
             _dbContext.TbUsers.Add(tblUser);
             _dbContext.SaveChanges();
-            return true;
+            var token = _generateToken.GenerateToken(tblUser);
+            return token;
         }
-        public string UserLogin(Login login)
+        public string UserLogin(TbUser login)
         {
             TbUser Userlogin = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId && x.Password == _encrypt.EncodePasswordToBase64(login.Password)).FirstOrDefault()!;
             if (Userlogin != null)
@@ -80,7 +72,7 @@ namespace Service.Services
                 return "User EmailId or Password not matched";
             }
         }
-        public bool ForgotPassword(Login login)
+        public bool ForgotPassword(ForgetPassword login)
         {
             TbUser UserEmail = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId).SingleOrDefault()!;
             UserEmail.Password = _encrypt.EncodePasswordToBase64(login.Password);

@@ -9,18 +9,16 @@ namespace Service.Inteface
 {
     public interface IUserDetails
     {
-        List<TbUser> GetUsersDetails();
-        public bool Register(TbUser tbUsers);
-       public bool CheckExtistUser(TbUser tblUser);
+        List<UserView> GetUsersDetail();
+        public List<TbUser> GetUsersDetails();
+        public string Register(TbUser tbUsers);
+       public bool ConfirmPassword(Registration tblUser);
 
-       public bool CheckExtistUser(Login login);
+       public bool CheckExtistUser(Registration user);
 
-       public bool CheckConfirmPassword(Login login);
+        public string UserLogin(TbUser login);  
 
-        public string UserLogin(Login login);  
-
-        public bool ForgotPassword(Login login);
-
+        public bool ForgotPassword(ForgetPassword changePassword);
        
 
     }

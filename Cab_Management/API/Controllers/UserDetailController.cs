@@ -9,6 +9,14 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using AutoMapper.QueryableExtensions;
+using Repository;
+using FluentNHibernate.Automapping;
+using NHibernate.Mapping;
 
 //using Microsoft.Data.SqlClient;
 
@@ -23,16 +31,19 @@ namespace API.Controllers
         private readonly DbCabServicesContext dbCabservice;
         private readonly IUserDetails IuserDetails;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper; 
 
-        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration)
+        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration , IMapper mapper)
         {
             dbCabservice = dbContext;
             IuserDetails = iuserDetails;
             _configuration = configuration; 
+            _mapper = mapper;
         }
 
         // GET: api/<UserController>
         [HttpGet()]
+        //[Authorize]
         public JsonResult GetUserDetail()
         {
             try
@@ -45,21 +56,52 @@ namespace API.Controllers
             }
         }
 
+        [HttpGet]
+        [MapToApiVersion("2")]
+        [Route("V2")]
+       // [Authorize]
+        public ActionResult<List<UserDisplay>> UserDetails2()
+        {
+            var users = IuserDetails.GetUsersDetail().Select(x=> _mapper.Map<UserDisplay>(x));
+            return Ok(users);
+        }
+
+        [HttpGet]
+        [Route("V3")]
+        [MapToApiVersion("3")]
+        [Authorize]
+        public JsonResult UserDetails3()
+        {
+            var c = new MapperConfiguration(cfg => cfg.CreateProjection<TbUser, UserDisplay>()
+                                                      .ForMember(dto => dto.UserRoleName, conf =>
+                                                  conf.MapFrom(ol => ol.UserRole.UserRoleName)));
+
+            return new JsonResult(dbCabservice.TbUsers.ProjectTo<UserDisplay>(c).ToList());
+        }
+
+        [HttpGet]
+        [Route("V4")]
+        [MapToApiVersion("4")]
+
+        public List<UserDisplay> UserDetails4()
+        {
+            List<UserDisplay> users = Automapper<UserView, UserDisplay>.MapList(IuserDetails.GetUsersDetail());
+            return users;
+        }
+
         [HttpPost()]
         [Route("Register")]
-        public JsonResult UserRegister(TbUser tblUser)
+        public JsonResult UserRegister(Registration tblUser)
         {
             try
             {
+                var logIndto = Automapper<Registration, TbUser>.MapClass(tblUser);
                 bool result = IuserDetails.CheckExtistUser(tblUser);
                 if (result == false)
                 {
-                    
-                        result = IuserDetails.Register(tblUser);
-                        if (result == true)
-                        {
-                            return new JsonResult(new CrudStatus() { Status = result, Message = "Registered successfully" });
-                        }
+                        IuserDetails.Register(logIndto);
+                         return new JsonResult(new CrudStatus() { Status = result, Message = "Registered successfully" });
+                        
                 }
                 return new JsonResult(new CrudStatus() { Status = false, Message = "Email Already Exist" });
             }
@@ -75,7 +117,8 @@ namespace API.Controllers
         {
             try
             {
-                string result=IuserDetails.UserLogin(login) ;
+                var logIndto = Automapper<Login, TbUser>.MapClass(login);
+                string result=IuserDetails.UserLogin(logIndto) ;
                 if (result != null)
                 {
                     return new JsonResult(new CrudStatus() { Status = true, Message = result });
@@ -93,22 +136,20 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("ForgotPassword")]
-        public JsonResult Forgot_password(Login login)
+        //[Authorize]
+        public JsonResult Forgot_password(ForgetPassword login)
         {
             try
             {
-                bool result = IuserDetails.CheckExtistUser(login);
+                var ForgetIndto = Automapper<ForgetPassword, Registration>.MapClass(login);
+                bool result = IuserDetails.CheckExtistUser(ForgetIndto);
                 if (result == true)
-                {
-                    result = IuserDetails.CheckConfirmPassword(login);
-                    if (result == true)
-                    {
-                        result = IuserDetails.ForgotPassword(login);
+                {                  
+                    result = IuserDetails.ForgotPassword(login);
                         if (result == true)
                         {
                             return new JsonResult(new CrudStatus() { Status = true, Message = "Password updated successfully" });
                         }
-                    }
                     else
                     {
                         return new JsonResult(new CrudStatus() { Status = result, Message = "Password and Confirm password not matched" });
