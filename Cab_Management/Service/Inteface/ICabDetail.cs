@@ -9,7 +9,6 @@ namespace Service.Inteface
 {
     public interface ICabDetail
     {
-
         public bool AddCab(TbCabDetail tbCabDetail);
         public bool RemoveCab(TbCabDetail tbCabDetail);
         public bool CheckAdmin(TbCabDetail tbCabDetail);

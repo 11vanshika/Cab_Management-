@@ -7,14 +7,14 @@ namespace Persistence;
 
 public partial class DbCabServicesContext : DbContext
 {
-    public DbCabServicesContext()
-    {
-    }
-
     public DbCabServicesContext(DbContextOptions<DbCabServicesContext> options)
         : base(options)
     {
     }
+
+    public virtual DbSet<BookingView> BookingViews { get; set; }
+
+    public virtual DbSet<CabView> CabViews { get; set; }
 
     public virtual DbSet<TbBooking> TbBookings { get; set; }
 
@@ -28,12 +28,57 @@ public partial class DbCabServicesContext : DbContext
 
     public virtual DbSet<TbUserRole> TbUserRoles { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server = 65.0.181.176;Database=db_CabServices;User Id = admin;Password = Asdf1234*;TrustServerCertificate=True;Connection Timeout=300;command timeout=300");
+    public virtual DbSet<UserView> UserViews { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<BookingView>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("BookingView");
+
+            entity.Property(e => e.BookingId).HasColumnName("bookingId");
+            entity.Property(e => e.CabName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.DestinationAddress)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.FirstName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.LastName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.RegistrationNun)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.ScheduleDate)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.ScheduleTime)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.SourceAddress)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<CabView>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("CabView");
+
+            entity.Property(e => e.CabName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.RegistrationNun)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<TbBooking>(entity =>
         {
             entity.HasKey(e => e.BookingId).HasName("PK__tb_booki__C6D03BCDC2E2D9C7");
@@ -150,6 +195,31 @@ public partial class DbCabServicesContext : DbContext
             entity.ToTable("tb_UserRole");
 
             entity.Property(e => e.UserRoleId).ValueGeneratedNever();
+            entity.Property(e => e.UserRoleName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<UserView>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("UserView");
+
+            entity.Property(e => e.CreateDate).HasColumnType("smalldatetime");
+            entity.Property(e => e.EmailId)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.FirstName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.LastName)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.MobileNumber)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.UpdateDate).HasColumnType("smalldatetime");
             entity.Property(e => e.UserRoleName)
                 .HasMaxLength(255)
                 .IsUnicode(false);

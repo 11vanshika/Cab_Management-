@@ -30,9 +30,7 @@ namespace Service.Services
                 new PhoneNumber("Whatsapp:91"+sendingNotification.MobileNumber));
                 messageOptions.From = new PhoneNumber("whatsapp:+1(415)523-8886");
                 messageOptions.Body = sendingNotification.Message;
-               // var message = MessageResource.Create(messageOptions);
                  var message = MessageResource.Create(messageOptions);
-                Console.WriteLine(message.Body);
                 return true;
             }
             else
@@ -49,10 +47,8 @@ namespace Service.Services
                 var messageOptions = new CreateMessageOptions(
                 new PhoneNumber("91" + sendingNotification.MobileNumber));
                 messageOptions.MessagingServiceSid = "MG8221dbe8e727556d0189ac7baa924d86";
-               // messageOptions.Body = "booking confirmed";
                 messageOptions.Body = sendingNotification.Message;
                 var message = MessageResource.Create(messageOptions);
-                Console.WriteLine(message.Body);
                 return true;
             }
             else

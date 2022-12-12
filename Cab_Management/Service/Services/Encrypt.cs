@@ -9,7 +9,6 @@ namespace Service.Services
 {
     public class Encrypt: IEncrypt
     {
-
         public string EncodePasswordToBase64(string password)
         {
             try
@@ -36,5 +35,4 @@ namespace Service.Services
             return result;
         }
     }
-
 }
