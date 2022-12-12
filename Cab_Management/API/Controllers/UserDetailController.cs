@@ -28,6 +28,7 @@ namespace API.Controllers
     [ApiController]
     public class UserDetailsController : BaseController
     {
+        private readonly DbCabServicesContext dbCabservice;
         private readonly IUserDetails IuserDetails;
         private readonly IConfiguration _configuration;
         private const string Sessionkey = "userId";
@@ -35,6 +36,7 @@ namespace API.Controllers
 
         public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration , IMapper mapper):base(dbContext)
         {
+            dbCabservice=dbContext;
             IuserDetails = iuserDetails;
             _configuration = configuration; 
             _mapper = mapper;
