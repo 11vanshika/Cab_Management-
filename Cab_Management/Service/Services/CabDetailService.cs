@@ -24,8 +24,8 @@ namespace Service.Services
 
         public bool CheckAdmin(TbCabDetail tbCabDetail)
         {
-            TbUser user = _dbCabServicesContext.TbUsers.Where(x => x.UserId == tbCabDetail.UserId).FirstOrDefault();
-            int Userroleid = Convert.ToInt32(user.UserRoleId);
+            TbUser user = _dbCabServicesContext.TbUsers.Where(x => x.UserId == tbCabDetail.UserId).FirstOrDefault()!;
+            int? Userroleid = user.UserRoleId;
             if (Userroleid == 2)
             {
                 return true;
@@ -54,9 +54,9 @@ namespace Service.Services
                     return true;
         }
 
-        public List<TbCabDetail> GetTbCabDetails()
+        public async Task<List<TbCabDetail>> GetTbCabDetails()
         {
-            List<TbCabDetail> tbCabDetails = _dbCabServicesContext.TbCabDetails.ToList();
+            List<TbCabDetail> tbCabDetails = await _dbCabServicesContext.TbCabDetails.ToListAsync();
             return tbCabDetails;
         }
 

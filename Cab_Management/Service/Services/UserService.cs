@@ -11,10 +11,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Service.Services
 {
-    public class UserService : IUserDetails
+    public class UserService : IUserDetails,IPagination
     {
         private readonly DbCabServicesContext _dbContext;
         private readonly IEncrypt _encrypt;
@@ -31,6 +32,28 @@ namespace Service.Services
             List<TbUser> users = _dbContext.TbUsers.ToList();
             return users;
         }
+        public IQueryable<TbUser> FindAll()
+        {
+            return this._dbContext.Set<TbUser>()
+                .AsNoTracking();
+        }
+        public PagedList<TbUser> GetUserbyCreateDate(PaginationParameters paginationParameters)
+        {
+            bool isDescending= paginationParameters.IsDescending;
+            if (isDescending == true)
+            {
+                return PagedList<TbUser>.ToPagedList(FindAll().OrderByDescending(on => on.CreateDate),
+                                paginationParameters.PageNumber,
+                                paginationParameters.PageSize);
+            }
+            else
+            {
+                return PagedList<TbUser>.ToPagedList(FindAll().OrderBy(on => on.CreateDate),
+                    paginationParameters.PageNumber,
+                    paginationParameters.PageSize);
+            }
+        }
+        
         public bool CheckExtistUser(TbUser tblUser)
         {
             var Email = _dbContext.TbUsers.Where(x => x.EmailId == tblUser.EmailId).FirstOrDefault();

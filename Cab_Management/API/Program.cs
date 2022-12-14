@@ -1,3 +1,4 @@
+using Domain;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -26,6 +27,8 @@ builder.Services.AddScoped<ICabDetail, CabDetailService>();
 builder.Services.AddScoped<ICabBooking, CabBookingService>();
 builder.Services.AddScoped<IGenerateToken , GenerateTokenServices>();
 builder.Services.AddScoped<ISendNotification, SendNotificationService>();
+builder.Services.AddScoped<IPagination, UserService>();
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
     options.TokenValidationParameters = new TokenValidationParameters

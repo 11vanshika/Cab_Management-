@@ -20,8 +20,5 @@ namespace Service.Inteface
         public string UserLogin(Login login);  
 
         public bool ForgotPassword(Login login);
-
-       
-
     }
 }

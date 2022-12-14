@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Newtonsoft.Json;
 
 //using Microsoft.Data.SqlClient;
 
@@ -23,12 +24,16 @@ namespace API.Controllers
         private readonly DbCabServicesContext dbCabservice;
         private readonly IUserDetails IuserDetails;
         private readonly IConfiguration _configuration;
+        private readonly IPagination _pagination;
+       
 
-        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration)
+        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration, IPagination pagination)
         {
             dbCabservice = dbContext;
             IuserDetails = iuserDetails;
-            _configuration = configuration; 
+            _configuration = configuration;
+            _pagination = pagination;
+          
         }
 
         // GET: api/<UserController>
@@ -44,6 +49,27 @@ namespace API.Controllers
                 return new JsonResult(ex.Message);
             }
         }
+        [HttpGet]
+        [Route("PaginatedbyCreatedate")]
+        public IActionResult GetUsersCreateDate([FromQuery] PaginationParameters ownerParameters)
+        {
+            var pages = _pagination.GetUserbyCreateDate(ownerParameters);
+
+            var metadata = new
+            {
+                pages.TotalCount,
+                pages.PageSize,
+                pages.CurrentPage,
+                pages.TotalPages,
+                pages.HasNext,
+                pages.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            return Ok(pages);
+        }
+       
 
         [HttpPost()]
         [Route("Register")]
