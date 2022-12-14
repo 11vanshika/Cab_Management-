@@ -12,7 +12,7 @@ namespace API.Controllers
     ///<summary>
     ///Api consist of BookingController that derive from controllerBase
     /// </summary>
-    public class BookingController : ControllerBase
+    public class BookingController : BaseController
     {
         /// <summary>
         /// By using the dependency injection calling all the methods
@@ -29,9 +29,8 @@ namespace API.Controllers
         /// <param name="dbCabServicesContext"></param>
         /// <param name="cabbooking"></param>
         /// <param name="sendNotification"></param>
-        public BookingController(DbCabServicesContext dbCabServicesContext, ICabBooking cabbooking, ISendNotification sendNotification)
+        public BookingController(DbCabServicesContext dbCabServicesContext, ICabBooking cabbooking, ISendNotification sendNotification):base(dbCabServicesContext)
         {
-            _dbCabServicesContext = dbCabServicesContext;
             _cabbooking = cabbooking;
             _sendNotification = sendNotification;
             _crudStatus = new CrudStatus();

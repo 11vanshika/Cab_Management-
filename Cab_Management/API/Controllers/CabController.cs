@@ -11,13 +11,12 @@ namespace API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Policy = "Cab_Admin")]
-    public class CabController : ControllerBase
+    public class CabController : BaseController
     {
         private readonly DbCabServicesContext dbCabServicesContext;
         private readonly ICabDetail cabAdmin;
-        public CabController(DbCabServicesContext dbCabServicesContext, ICabDetail cabAdmin)
+        public CabController(DbCabServicesContext dbCabServicesContext, ICabDetail cabAdmin):base(dbCabServicesContext)
         {
-            this.dbCabServicesContext = dbCabServicesContext;
             this.cabAdmin = cabAdmin;
         }
 
@@ -27,6 +26,7 @@ namespace API.Controllers
         {
             try
             {
+
                 bool result = cabAdmin.CheckAdmin(tbCabDetail);
                 if (result == true)
                 {

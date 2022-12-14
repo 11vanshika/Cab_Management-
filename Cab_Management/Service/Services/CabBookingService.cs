@@ -44,7 +44,6 @@ namespace Service.Services
             int CabStatus = Convert.ToInt32(cabDetail.Status);
             return CabStatus == 1;
         }
-
         public bool checkCabForBooking(TbBooking tbBooking)
         {
             TbCabDetail cabDetail = _dbCabServicesContext.TbCabDetails.Where(x => x.Cabid == tbBooking.CabId).FirstOrDefault()!;

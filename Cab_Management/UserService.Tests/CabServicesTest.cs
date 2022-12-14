@@ -15,8 +15,6 @@ namespace CabManagementTestProject
        
         private readonly DataBaseFixture dataBaseFixture;
         private readonly CabDetailService service;
-       
-
       public CabServicesTest(DataBaseFixture dataBaseFixture)
         {
             this.dataBaseFixture = dataBaseFixture;
@@ -24,7 +22,6 @@ namespace CabManagementTestProject
         }
 
         [Fact]
-
         public void Add_NewCab()
         {
            //Arrange
@@ -60,6 +57,7 @@ namespace CabManagementTestProject
             //Assert
             Assert.Equal(count, items);
         }
+
         [Fact]
         public void RemoveCab()
         {

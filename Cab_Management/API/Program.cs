@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
+using Repository;
 using Service.Inteface;
 using Service.Services;
 using System.Text;
@@ -29,6 +30,7 @@ builder.Services.AddScoped<IGenerateToken , GenerateTokenServices>();
 builder.Services.AddScoped<ISendNotification, SendNotificationService>();
 builder.Services.AddScoped<IPagination, UserService>();
 
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -52,7 +54,14 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Customer",
          policy => policy.RequireRole("Customer"));
 });
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(100);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -65,7 +74,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseSession();
 app.MapControllers();
 
 app.Run();

@@ -15,13 +15,11 @@ namespace Service.Services
     {
 
         private readonly DbCabServicesContext _dbCabServicesContext;
-
         public CabDetailService(DbCabServicesContext dbcontext)
         {
             _dbCabServicesContext = dbcontext;
 
         }
-
         public bool CheckAdmin(TbCabDetail tbCabDetail)
         {
             TbUser user = _dbCabServicesContext.TbUsers.Where(x => x.UserId == tbCabDetail.UserId).FirstOrDefault()!;
@@ -32,7 +30,6 @@ namespace Service.Services
             }
             return false;
         }
-
         public bool CheckRegNum(TbCabDetail tbCabDetail)
         {
             TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault();
@@ -43,7 +40,6 @@ namespace Service.Services
             return true;
 
         }
-
         public bool AddCab(TbCabDetail tbCabDetail)
         {
                     tbCabDetail.CreateDate = DateTime.Now;
@@ -59,7 +55,6 @@ namespace Service.Services
             List<TbCabDetail> tbCabDetails = await _dbCabServicesContext.TbCabDetails.ToListAsync();
             return tbCabDetails;
         }
-
         public bool RemoveCab(TbCabDetail tbCabDetail)
         {
             TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault();
@@ -67,7 +62,6 @@ namespace Service.Services
             _dbCabServicesContext.SaveChanges();
             return true;
         }
-
         public bool UpdateCab(TbCabDetail tbCabDetail)
         {
             TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault();
