@@ -14,10 +14,7 @@ namespace Service.Inteface
         public string Register(TbUser tbUsers);
        public bool ConfirmPassword(Registration tblUser);
 
-       public bool CheckExtistUser(Registration user);
-
-       public bool CheckConfirmPassword(Login login);
-
+        public bool CheckExtistUser(Registration login);
 
         public Tuple<string, int> UserLogin(TbUser login);
 

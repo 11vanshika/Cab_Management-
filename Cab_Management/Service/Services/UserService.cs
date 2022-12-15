@@ -65,6 +65,7 @@ namespace Service.Services
             return tblUser.Password == tblUser.ConfirmPassword;
         }
 
+
         public bool CheckExtistUser(Registration login)
         {
             var Email = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId).FirstOrDefault();

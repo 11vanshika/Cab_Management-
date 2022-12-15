@@ -83,7 +83,7 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("CabBooking")]
-        [Authorize]
+        [Authorize(Policy = "Customer")]
         public JsonResult BookingCab(TbBooking tbBooking)
         {
             try

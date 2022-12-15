@@ -10,7 +10,7 @@ namespace Service.Inteface
     public interface IPagination
     {
        PagedList<TbUser> GetUserbyCreateDate(PaginationParameters ownerParameters);
-       //PagedList<TbUser> GetUserbyDescCreateDate(PaginationParameters paginationParameters);
+       //PagedList<TbCabDetail> GetCabsbyCreateDate(PaginationParameters paginationParameters);
 
 
     }

@@ -125,7 +125,7 @@ namespace API.Controllers
                 if (result == false)
                 {
                         IuserDetails.Register(logIndto);
-                         return new JsonResult(new CrudStatus() { Status = result, Message = "Registered successfully" });
+                         return new JsonResult(new CrudStatus() { Status = true , Message = "Registered successfully" });
                         
                 }
                 return new JsonResult(new CrudStatus() { Status = false, Message = "Email Already Exist" });
