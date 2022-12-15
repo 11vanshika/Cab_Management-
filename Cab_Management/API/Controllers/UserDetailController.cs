@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -28,19 +29,24 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+  ///<summary>
+  ///API Consist of UserDetailController that derive from Controller Base
+  ///</summary>
     public class UserDetailsController : BaseController
     {
         private readonly DbCabServicesContext dbCabservice;
         private readonly IUserDetails IuserDetails;
         private readonly IConfiguration _configuration;
+        private readonly IPagination _pagination;
         private const string Sessionkey = "userId";
         private readonly IMapper _mapper; 
         private readonly CrudStatus crudStatus;
-        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration , IMapper mapper):base(dbContext)
+        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration , IMapper mapper, IPagination pagination) :base(dbContext)
         {
             dbCabservice=dbContext;
             IuserDetails = iuserDetails;
-            _configuration = configuration; 
+            _configuration = configuration;
+            _pagination = pagination;
             _mapper = mapper;
             crudStatus=new CrudStatus();
         }
@@ -71,7 +77,11 @@ namespace API.Controllers
                 return new JsonResult(ex.Message);
             }
         }
-
+        /// <summary>
+        /// User can Login from UserLogin()
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
         [HttpPost()]
         [Route("Login")]
         public JsonResult UserLogin(Login login)
@@ -100,6 +110,11 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// If User Forget his Password he can Reset from Forgot_password Method
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("ForgotPassword")]
         public JsonResult Forgot_password(ForgetPassword password)
@@ -153,6 +168,10 @@ namespace API.Controllers
             }
         }
 
+
+        ///<summary>
+        ///Getting all the UserDetails from GetUserDetails()
+        ///</summary>
         [HttpGet()]
         [Route("GetUserDetails")]
         [Authorize(Policy = "Cab_Admin")]
@@ -167,7 +186,32 @@ namespace API.Controllers
                 return new JsonResult(ex.Message);
             }
         }
+        [HttpGet]
+        [Route("PaginatedbyCreatedate")]
+        public IActionResult GetUsersCreateDate([FromQuery] PaginationParameters ownerParameters)
+        {
+            var pages = _pagination.GetUserbyCreateDate(ownerParameters);
 
+            var metadata = new
+            {
+                pages.TotalCount,
+                pages.PageSize,
+                pages.CurrentPage,
+                pages.TotalPages,
+                pages.HasNext,
+                pages.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            return Ok(pages);
+        }
+       
+
+        /// <summary>
+        /// Getting UserDetails from Versioning 2
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [MapToApiVersion("2")]
         [Route("V2")]
@@ -178,6 +222,10 @@ namespace API.Controllers
             return Ok(users);
         }
 
+        /// <summary>
+        /// Getting UserDetails from Versioning3
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("V3")]
         [MapToApiVersion("3")]
@@ -191,6 +239,10 @@ namespace API.Controllers
             return new JsonResult(dbCabservice.TbUsers.ProjectTo<UserDisplay>(c).ToList());
         }
 
+        /// <summary>
+        /// Getting UserDetails from versioning4
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("V4")]
         [MapToApiVersion("4")]
@@ -200,6 +252,12 @@ namespace API.Controllers
             List<UserDisplay> users = Automapper<UserView, UserDisplay>.MapList(IuserDetails.GetUsersDetail());
             return users;
         }
+        /// <summary>
+        /// UserRegister-user can register with his details,if user exist already he cant register again
+        ///
+        /// </summary>
+        /// <param name="tblUser"></param>
+        /// <returns></returns>
 
         [HttpGet]
         [Route("V5")]

@@ -9,48 +9,84 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    ///<summary>
+    ///Api consist of BookingController that derive from controllerBase
+    /// </summary>
     public class BookingController : BaseController
     {
+        /// <summary>
+        /// By using the dependency injection calling all the methods
+        /// </summary>
+       
         private readonly DbCabServicesContext _dbCabServicesContext;
         private readonly ICabBooking _cabbooking;
         private readonly ISendNotification _sendNotification;
+        private readonly CrudStatus _crudStatus;
+
+        /// <summary>
+        /// here we passed these parameters inside the constructor
+        /// </summary>
+        /// <param name="dbCabServicesContext"></param>
+        /// <param name="cabbooking"></param>
+        /// <param name="sendNotification"></param>
         public BookingController(DbCabServicesContext dbCabServicesContext, ICabBooking cabbooking, ISendNotification sendNotification):base(dbCabServicesContext)
         {
+            _dbCabServicesContext = dbCabServicesContext;
             _cabbooking = cabbooking;
             _sendNotification = sendNotification;
+            _crudStatus = new CrudStatus();
         }
+
+        /// <summary>
+        /// calling GetTbTripDetails() method from CabBookingService 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetTripDetails")]
+
         [Authorize]
-        public JsonResult GetTbTripDetails()
+        public async Task<ActionResult> GetTbTripDetails()
         {
             try
             {
-                return new JsonResult(_cabbooking.GetTbTripDetails().ToList());
+                var trips = await _cabbooking.GetTbTripDetails();
+                return Ok(trips);
             }
             catch (Exception ex)
             {
                 return new JsonResult(ex.Message);
             }
         }
+
+        /// <summary>
+        /// calling GetAvailableCabDetails method from CabBookingService 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("Available Cab")]
+
         [Authorize]
-        public JsonResult GetAvailableCabDetails()
+        public async Task<ActionResult> GetAvailableCabDetails()
         {
             try
             {
-                return new JsonResult(_cabbooking.GetAvailableCabDetails().ToList());
+                var cabs = await _cabbooking.GetAvailableCabDetails();  
+                return Ok(cabs);
             }
             catch (Exception ex)
             {
                 return new JsonResult(ex.Message);
             }
         }
+
+        /// <summary>
+        /// calling the checkCabForBooking to check cab availability then calling the bookingCab method from CabBookingService
+        /// </summary>
+        /// <param name="tbBooking"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("CabBooking")]
         [Authorize(Policy = "Customer")]
-
         public JsonResult BookingCab(TbBooking tbBooking)
         {
             try
@@ -58,13 +94,16 @@ namespace API.Controllers
                 bool result = _cabbooking.checkCabForBooking(tbBooking);
                 if (result == true)
                 {
-                    result = _cabbooking.bookingCab(tbBooking);
-                    if (result == true)
-                    {
-                        return new JsonResult(new CrudStatus() { Status = result, Message = "Booking Request Send Successfully" });
-                    }
+                    _cabbooking.bookingCab(tbBooking);
+                    _crudStatus.Status = true;
+                    _crudStatus.Message = "Booking request send Successfully";
                 }
-                return new JsonResult(new CrudStatus() { Status = false, Message = "Cab not available" });
+                else
+                {
+                    _crudStatus.Status = false;
+                    _crudStatus.Message = "Cab not available";
+                }
+                return new JsonResult(_crudStatus);
             }
             catch (Exception ex)
             {
@@ -87,6 +126,11 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// calling checkCabForConfirmBooking to check the cab availability then calling the ConfirmBooking if the booking is confirmed the cab status get updated
+        /// </summary>
+        /// <param name="tbBooking"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("ConfirmBooking")]
        [Authorize(Policy = "Cab_Admin")]
@@ -97,29 +141,40 @@ namespace API.Controllers
                 bool result = _cabbooking.checkCabForConfirmBooking(tbBooking);
                 if (result == true)
                 {
-
                     result = _cabbooking.ConfirmBooking(tbBooking);
                     if (result == true)
                     {
-                      
                         result = _cabbooking.UpdateCabStatus(tbBooking);
                         if (result == true)
                         {
-                            return new JsonResult(new CrudStatus() { Status = result, Message = "Booking Confirmed Successfully" });
+                            _crudStatus.Status = true;
+                            _crudStatus.Message = "Booking Confirmed Successfully";
                         }
                         else
                         {
-                            return new JsonResult(new CrudStatus() { Status = result, Message = "Cab is not available" });
+                            _crudStatus.Status = false;
+                            _crudStatus.Message = "Cab is not available";
                         }
                     }
                 }
-                return new JsonResult(new CrudStatus() { Status = false, Message = "Booking rejected" });
+                else
+                {
+                    _crudStatus.Status = false;
+                    _crudStatus.Message = "Booking rejected";
+                }
+                return new JsonResult(_crudStatus);
             }
             catch (Exception ex)
             {
                 return new JsonResult(ex.Message);
             }
         }
+
+        /// <summary>
+        /// calling the RideCompleted method from CabBookingService
+        /// </summary>
+        /// <param name="tbBooking"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("RideCompleted")]
         [Authorize(Policy = "Customer")]
@@ -130,24 +185,55 @@ namespace API.Controllers
                 bool result = _cabbooking.RideCompleted(tbBooking);
                 if (result == true)
                 {
-                    return new JsonResult(new CrudStatus() { Status = result, Message = "Ride completed Successfully" });
+                    _crudStatus.Status = true;
+                    _crudStatus.Message = "Ride completed Successfully";
                 }
-                return new JsonResult(result);
+                else
+                {
+                    _crudStatus.Status = false;
+                    _crudStatus.Message = "Ride not completed Successfully";
+                } 
+                return new JsonResult(_crudStatus);
             }
             catch (Exception ex)
             {
                 return new JsonResult(ex.Message);
             }
         }
-     
+
+        /// <summary>
+        /// calling the GetPendingBooking method to get the pending bookings from CabBookingService
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        [Route("GetBookingDetails")]
+        [Route("BookingPending")]
         [Authorize(Policy = "Cab_Admin")]
-        public JsonResult GetTbBookingDetails()
+        public async Task<ActionResult> GetPendingBooking()
         {
             try
             {
-                return new JsonResult(_cabbooking.GetTbBookingDetails().ToList());
+                var bookingPendings = await _cabbooking.GetPendingBooking();
+                return Ok(bookingPendings);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// calling the GetTbBookingDetails method to get the bookings details from CabBookingService
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("GetBookingDetails")]
+        [Authorize(Policy = "Cab_Admin")]
+        public async Task<ActionResult> GetTbBookingDetails()
+        {
+            try
+            {
+                var bookings = await _cabbooking.GetTbBookingDetails();
+                return Ok(bookings);
             }
             catch (Exception ex)
             {
