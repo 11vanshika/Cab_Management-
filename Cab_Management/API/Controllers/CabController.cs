@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Service.Inteface;
 
@@ -114,6 +115,20 @@ namespace API.Controllers
                         _crudStatus.Message = "cab RegNum not matched";
                     }
                 return new JsonResult(_crudStatus);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(ex.Message);
+            }
+        }
+        [HttpGet]
+        [Route("V2")]
+        [MapToApiVersion("2")]
+        public JsonResult Getcab(int id)
+        {
+            try
+            {
+                return new JsonResult(cabAdmin.Getuser(id).ToList());
             }
             catch (Exception ex)
             {

@@ -29,6 +29,7 @@ namespace Bookingservice.Tests
         public void GetAll_BookingDetails()
         {
             //Arrange
+
             var result = bookingService.GetTbBookingDetails().Result;
             var count = _fixture.context.TbBookings.Count();
             //Act

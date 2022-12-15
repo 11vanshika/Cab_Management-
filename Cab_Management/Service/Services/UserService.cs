@@ -80,10 +80,8 @@ namespace Service.Services
             tblUser.Status = 1;
             _dbContext.TbUsers.Add(tblUser);
             _dbContext.SaveChanges();
-            var token = _generateToken.GenerateToken(tblUser);
-            return token;
+            return "Registration Successfully";
         }
-
         public Tuple<string, int> UserLogin(TbUser login)
         {
             string checkpass = _encrypt.EncodePasswordToBase64(login.Password);
@@ -99,15 +97,36 @@ namespace Service.Services
                 return null!;
             }
         }
-
-        public bool ForgotPassword(ForgetPassword login)
+        public void ForgotPassword(ForgetPassword login)
         {
-            TbUser UserEmail = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId).SingleOrDefault()!;
-            UserEmail.Password = _encrypt.EncodePasswordToBase64(login.Password);
-            UserEmail.UpdateDate = DateTime.Now;
-            _dbContext.Entry(UserEmail).State = EntityState.Modified;
-            _dbContext.SaveChanges();
-            return true;
+                TbUser UserEmail = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId).SingleOrDefault()!;
+                UserEmail.Password = _encrypt.EncodePasswordToBase64(login.Password);
+                UserEmail.UpdateDate = DateTime.Now;
+                _dbContext.Entry(UserEmail).State = EntityState.Modified;
+                _dbContext.SaveChanges();           
+        }
+        public void ChangingActiveStatus(string EmailId)
+        {
+            TbUser user  = _dbContext.TbUsers.Where(x => x.EmailId == EmailId).FirstOrDefault()!;
+            user.Status = user.Status == 1 ? 0 : 1;
+            user.UpdateDate = DateTime.Now;
+            _dbContext.Entry(user).State = EntityState.Modified;
+            _dbContext.SaveChanges(); 
+        }
+
+        public List<TbUser> Getuser(int id)
+        {
+            List<TbUser> list = (from user in _dbContext.TbUsers
+                                 where (user.UserId == id)
+                                 select new TbUser
+                                 {
+                                     UserId = user.UserId,
+                                     FirstName = user.FirstName,
+                                     LastName = user.LastName,
+                                     MobileNumber = user.MobileNumber,
+                                     EmailId = user.EmailId,
+                                 }).ToList();
+            return list.ToList();
         }
     }
 }

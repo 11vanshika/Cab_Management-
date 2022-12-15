@@ -111,12 +111,27 @@ namespace API.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("BookingPending")]
+        [Authorize(Policy = "Cab_Admin")]
+        public JsonResult GetPendingBooking()
+        {
+            try
+            {
+                return new JsonResult(_cabbooking.GetPendingBooking().ToList());
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(ex.Message);
+            }
+        }
+
         /// <summary>
         /// calling checkCabForConfirmBooking to check the cab availability then calling the ConfirmBooking if the booking is confirmed the cab status get updated
         /// </summary>
         /// <param name="tbBooking"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPut]
         [Route("ConfirmBooking")]
        [Authorize(Policy = "Cab_Admin")]
         public JsonResult ConfirmBooking(TbBooking tbBooking)
@@ -162,7 +177,7 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("RideCompleted")]
-       //[Authorize(Policy = "Customer")]
+        [Authorize(Policy = "Customer")]
         public JsonResult RideCompleted(TbBooking tbBooking)
         {
             try

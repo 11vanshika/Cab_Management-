@@ -18,6 +18,8 @@ using AutoMapper.QueryableExtensions;
 using Repository;
 using FluentNHibernate.Automapping;
 using NHibernate.Mapping;
+using Twilio.Jwt.AccessToken;
+using static NHibernate.Engine.Query.CallableParser;
 
 //using Microsoft.Data.SqlClient;
 
@@ -37,23 +39,142 @@ namespace API.Controllers
         private readonly IConfiguration _configuration;
         private readonly IPagination _pagination;
         private const string Sessionkey = "userId";
-        private readonly IMapper _mapper;
-
-        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration, IPagination pagination, IMapper mapper) : base(dbContext)
+        private readonly IMapper _mapper; 
+        private readonly CrudStatus crudStatus;
+        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration , IMapper mapper, IPagination pagination) :base(dbContext)
         {
             dbCabservice=dbContext;
             IuserDetails = iuserDetails;
             _configuration = configuration;
             _pagination = pagination;
             _mapper = mapper;
+            crudStatus=new CrudStatus();
         }
 
-        // GET: api/<UserController>
-        [HttpGet()]
+        [HttpPost()]
+        [Route("Register")]
+        public JsonResult UserRegister(Registration tblUser)
+        {
+            try
+            {
+                var RegIndto = Automapper<Registration, TbUser>.MapClass(tblUser);
+                bool result = IuserDetails.CheckExtistUser(tblUser);
+                if (result == false)
+                {
+                    string message = IuserDetails.Register(RegIndto);
+                    crudStatus.Status = true;
+                    crudStatus.Message = message;
+                }
+                else
+                {
+                    crudStatus.Status = false;
+                    crudStatus.Message = "Email Already Exist";
+                }
+                return new JsonResult(crudStatus);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(ex.Message);
+            }
+        }
+        /// <summary>
+        /// User can Login from UserLogin()
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        [HttpPost()]
+        [Route("Login")]
+        public JsonResult UserLogin(Login login)
+        {
+            try
+            {
+                var logIndto = Automapper<Login, TbUser>.MapClass(login);
+                var result = IuserDetails.UserLogin(logIndto);
+                if (result != null)
+                {
+                    HttpContext.Session.SetInt32(Sessionkey, result.Item2);
+                    loginID(Sessionkey);
+                    crudStatus.Status = true;
+                    crudStatus.Message = result.Item1; 
+                }
+                else
+                {
+                    crudStatus.Status = false;
+                    crudStatus.Message = "User id not Mached";
+                }
+                return new JsonResult(crudStatus);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// If User Forget his Password he can Reset from Forgot_password Method
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("ForgotPassword")]
+        public JsonResult Forgot_password(ForgetPassword password)
+        {
+            try
+            {
+                var ForgetIndto = Automapper<ForgetPassword, Registration>.MapClass(password);
+                bool result = IuserDetails.CheckExtistUser(ForgetIndto);
+                if (result == true)
+                {
+                    result = IuserDetails.ConfirmPassword(ForgetIndto);
+                    if (result == true)
+                    {
+                        IuserDetails.ForgotPassword(password);
+                        crudStatus.Status = true;
+                        crudStatus.Message = "Password updated successfully";
+                    }
+                    else
+                    {
+                        crudStatus.Status = false;
+                        crudStatus.Message = "Password and Confirm Password not matched";
+                    }
+                }
+                else
+                {
+                    crudStatus.Status = false;
+                    crudStatus.Message = "Email not  registered Please Sign up";
+                }
+                return new JsonResult(crudStatus);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(ex.Message);
+            }
+        }
+
+        [HttpPut("Changing_Active_Status")]
+        [Authorize]
+        public JsonResult ChangingActiveStatus(string EmailId)
+        {
+            try
+            {
+                IuserDetails.ChangingActiveStatus(EmailId);
+                crudStatus.Status = true;
+                crudStatus.Message = "Your Account Deactivated";
+                return new JsonResult(crudStatus);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(ex.Message);
+            }
+        }
+
+
         ///<summary>
         ///Getting all the UserDetails from GetUserDetails()
         ///</summary>
-        [Authorize]
+        [HttpGet()]
+        [Route("GetUserDetails")]
+        [Authorize(Policy = "Cab_Admin")]
         public JsonResult GetUserDetail()
         {
             try
@@ -94,7 +215,7 @@ namespace API.Controllers
         [HttpGet]
         [MapToApiVersion("2")]
         [Route("V2")]
-        [Authorize]
+        [Authorize(Policy = "Cab_Admin")]
         public ActionResult<List<UserDisplay>> UserDetails2()
         {
             var users = IuserDetails.GetUsersDetail().Select(x=> _mapper.Map<UserDisplay>(x));
@@ -108,7 +229,7 @@ namespace API.Controllers
         [HttpGet]
         [Route("V3")]
         [MapToApiVersion("3")]
-        [Authorize]
+        [Authorize(Policy = "Cab_Admin")]
         public JsonResult UserDetails3()
         {
             var c = new MapperConfiguration(cfg => cfg.CreateProjection<TbUser, UserDisplay>()
@@ -125,7 +246,7 @@ namespace API.Controllers
         [HttpGet]
         [Route("V4")]
         [MapToApiVersion("4")]
-
+        [Authorize(Policy = "Cab_Admin")]
         public List<UserDisplay> UserDetails4()
         {
             List<UserDisplay> users = Automapper<UserView, UserDisplay>.MapList(IuserDetails.GetUsersDetail());
@@ -138,86 +259,15 @@ namespace API.Controllers
         /// <param name="tblUser"></param>
         /// <returns></returns>
 
-        [HttpPost()]
-        [Route("Register")]
-        public JsonResult UserRegister(Registration tblUser)
-        {
-            try
-            {
-                var logIndto = Automapper<Registration, TbUser>.MapClass(tblUser);
-                bool result = IuserDetails.CheckExtistUser(tblUser);
-                if (result == false)
-                {
-                        IuserDetails.Register(logIndto);
-                         return new JsonResult(new CrudStatus() { Status = true, Message = "Registered successfully" });                        
-                }
-                return new JsonResult(new CrudStatus() { Status = false, Message = "Email Already Exist" });
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(ex.Message);
-            }
-        }
-        /// <summary>
-        /// User can Login from UserLogin()
-        /// </summary>
-        /// <param name="login"></param>
-        /// <returns></returns>
-        [HttpPost()]
-        [Route("Login")]
-        
-        public JsonResult UserLogin(Login login)
-        {
-            try
-            {
-                var logIndto = Automapper<Login, TbUser>.MapClass(login);
-                var result=IuserDetails.UserLogin(logIndto) ;
-                if (result != null)
-                {
-                    //inbuild func to set a value
-                    HttpContext.Session.SetInt32(Sessionkey, result.Item2);
-                    loginID(Sessionkey);
-                    return new JsonResult(new CrudStatus() { Status = true, Message = result.Item1 });
-                }
-                else
-                {
-                    return new JsonResult(new CrudStatus() { Status = false, Message = "User id not Mached" });
-                }
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// If User Forget his Password he can Reset from Forgot_password Method
-        /// </summary>
-        /// <param name="login"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("ForgotPassword")]
+        [HttpGet]
+        [Route("V5")]
+        [MapToApiVersion("5")]
         [Authorize]
-        public JsonResult Forgot_password(ForgetPassword login)
+        public JsonResult GetUser(int id)
         {
             try
             {
-                var ForgetIndto = Automapper<ForgetPassword, Registration>.MapClass(login);
-                bool result = IuserDetails.CheckExtistUser(ForgetIndto);
-                if (result == true)
-                {                  
-                    result = IuserDetails.ForgotPassword(login);
-                        if (result == true)
-                        {
-                        UserLogin(login);
-                            return new JsonResult(new CrudStatus() { Status = true, Message = "Password updated successfully" });
-                        }
-                    else
-                    {
-                        return new JsonResult(new CrudStatus() { Status = result, Message = "Password and Confirm password not matched" });
-                    }
-                }
-                return new JsonResult(new CrudStatus() { Status = false, Message = "Email not  registered Please Sign up" });
+                return new JsonResult(IuserDetails.Getuser(id).ToList());
             }
             catch (Exception ex)
             {

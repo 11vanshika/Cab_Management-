@@ -12,6 +12,9 @@ namespace Service.Inteface
         public void AddCab(TbCabDetail tbCabDetail);
         public void RemoveCab(TbCabDetail tbCabDetail);
         public bool CheckRegNum(TbCabDetail tbCabDetail);
+
+        public List<TbCabDetail> Getuser(int id);
+
         Task<List<TbCabDetail>> GetTbCabDetails();
         public void UpdateCab(TbCabDetail tbCabDetail);
     }

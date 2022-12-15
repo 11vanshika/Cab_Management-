@@ -25,7 +25,7 @@ namespace Service.Services
         {
             if(sendingNotification != null) { 
                 var accountSid = "AC65cf2916278f8df92873f0da47b6f03e";
-                var authToken = "e9e4bf7e5186612df954f24d9cfa0a65";
+                var authToken = "803a292834f8d63b6476622de1e4ec57";
                 TwilioClient.Init(accountSid, authToken);
                 var messageOptions = new CreateMessageOptions(
                 new PhoneNumber("Whatsapp:91"+sendingNotification.MobileNumber));
@@ -44,7 +44,7 @@ namespace Service.Services
         {
            if (sendingNotification != null) {
                 var accountSid = "AC65cf2916278f8df92873f0da47b6f03e";
-                var authToken = "e9e4bf7e5186612df954f24d9cfa0a65";
+                var authToken = "803a292834f8d63b6476622de1e4ec57";
                 TwilioClient.Init(accountSid, authToken);
                 var messageOptions = new CreateMessageOptions(
                 new PhoneNumber("91" + sendingNotification.MobileNumber));

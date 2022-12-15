@@ -23,6 +23,7 @@ namespace Service.Services
             _dbCabServicesContext = dbcontext;
             _sendNotification = sendNotification;
         }
+
         
         public async Task<List<TbBooking>> GetTbBookingDetails()
         {
@@ -52,7 +53,6 @@ namespace Service.Services
             int CabStatus = Convert.ToInt32(cabDetail.Status);
             return CabStatus == 1;
         }
-
         public void bookingCab(TbBooking tbBooking)
         {
             tbBooking.CreateDate = DateTime.Now;

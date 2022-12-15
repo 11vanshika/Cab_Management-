@@ -22,12 +22,12 @@ namespace UserDetailService.Test
         // ICollectionFixture<> interfaces.
     }
     [Collection("Database Collection")]
-    public class UserServiceTests 
-    { 
-    private readonly DataBaseFixture _fixture;
-    private readonly UserService userService;
-    private readonly Mock<IEncrypt> encrypt;
-    private readonly Mock<IGenerateToken> generateToken;
+    public class UserServiceTests
+    {
+        private readonly DataBaseFixture _fixture;
+        private readonly UserService userService;
+        private readonly Mock<IEncrypt> encrypt;
+        private readonly Mock<IGenerateToken> generateToken;
 
         public UserServiceTests(DataBaseFixture fixture)
         {
@@ -69,9 +69,9 @@ namespace UserDetailService.Test
             generateToken.Setup(x => x.GenerateToken(ExistingUser)).Returns("login SuccessFully");
             var result = userService.Register(ExistingUser);
             //Assert
-            Assert.NotNull(result);  
+            Assert.NotNull(result);
         }
-        
+
         [Fact]
         public void CheckExistingUser_ReturnsGoodResponse()
         {
@@ -87,7 +87,7 @@ namespace UserDetailService.Test
             var result = userService.CheckExtistUser(ExistingUser);
 
             //Assert
-            Assert.True(result);    
+            Assert.True(result);
         }
 
         [Fact]
@@ -105,8 +105,6 @@ namespace UserDetailService.Test
 
             //Assert
             Assert.True(result);
-
-            
         }
 
         [Fact]
@@ -124,7 +122,7 @@ namespace UserDetailService.Test
             var result = userService.CheckExtistUser(ExistingUser);
 
             //Assert
-            Assert.True(result);     
+            Assert.True(result);
         }
 
         [Fact]
@@ -144,7 +142,7 @@ namespace UserDetailService.Test
             var result = userService.ConfirmPassword(ExistingUser);
 
             //Assert
-            Assert.True(result);           
+            Assert.True(result);
         }
 
         [Fact]
@@ -163,7 +161,7 @@ namespace UserDetailService.Test
             var result = userService.ConfirmPassword(ExistingUser);
 
             //Assert
-            Assert.False(result);   
+            Assert.False(result);
         }
 
         [Fact]
@@ -181,7 +179,7 @@ namespace UserDetailService.Test
             var result = userService.UserLogin(ExistingUser);
 
             //Assert
-            Assert.NotNull(result.Item2);  
+            Assert.NotNull(result.Item2);
         }
 
         [Fact]
@@ -222,7 +220,7 @@ namespace UserDetailService.Test
             //Assert
             Assert.Null(result);
         }
-       
+
         [Fact]
         public void ForgotPassword__ReturnsGoodResponse()
         {
@@ -230,15 +228,43 @@ namespace UserDetailService.Test
             var ExistingUser = new ForgetPassword()
             {
                 EmailId = "jyothi@gmail.com",
-                Password = "3456"
+                Password = "3456",
+                ConfirmPassword = "3456"
             };
 
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
-            var result = userService.ForgotPassword(ExistingUser);
+            try
+            {
+                userService.ForgotPassword(ExistingUser);
+            }
+            catch
+            {
+                // Assert
+                Assert.NotNull(ExistingUser);
+            }
+        }
 
-           // Assert
-            Assert.True(result);   
+        public void ForgotPassword__ReturnsBadResponse()
+        {
+            //Arrange
+            var ExistingUser = new ForgetPassword()
+            {
+                EmailId = "jyothi@gmail.com",
+                Password = "3456",
+                ConfirmPassword = "345"
+            };
+
+            //Act
+            try
+            {
+                userService.ForgotPassword(ExistingUser);
+            }
+            catch
+            {
+                // Assert
+                Assert.NotNull(ExistingUser);
+            }
         }
     }
 }
