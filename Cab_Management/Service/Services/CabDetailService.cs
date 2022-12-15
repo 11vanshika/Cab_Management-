@@ -13,13 +13,13 @@ namespace Service.Services
 {
     public class CabDetailService : ICabDetail
     {
-
         private readonly DbCabServicesContext _dbCabServicesContext;
         public CabDetailService(DbCabServicesContext dbcontext)
         {
             _dbCabServicesContext = dbcontext;
 
         }
+
         public bool CheckAdmin(TbCabDetail tbCabDetail)
         {
             TbUser user = _dbCabServicesContext.TbUsers.Where(x => x.UserId == tbCabDetail.UserId).FirstOrDefault()!;
@@ -33,21 +33,15 @@ namespace Service.Services
         public bool CheckRegNum(TbCabDetail tbCabDetail)
         {
             TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault();
-            if (cab == null)
-            {
-                return false;
-            }
-            return true;
-
+            return  cab != null;
         }
-        public bool AddCab(TbCabDetail tbCabDetail)
+        public void AddCab(TbCabDetail tbCabDetail)
         {
                     tbCabDetail.CreateDate = DateTime.Now;
                     tbCabDetail.UpdateDate = null;
                     tbCabDetail.Status = 1;
                     _dbCabServicesContext.TbCabDetails.Add(tbCabDetail);
                     _dbCabServicesContext.SaveChanges();
-                    return true;
         }
 
         public async Task<List<TbCabDetail>> GetTbCabDetails()
@@ -55,21 +49,19 @@ namespace Service.Services
             List<TbCabDetail> tbCabDetails = await _dbCabServicesContext.TbCabDetails.ToListAsync();
             return tbCabDetails;
         }
-        public bool RemoveCab(TbCabDetail tbCabDetail)
+        public void RemoveCab(TbCabDetail tbCabDetail)
         {
-            TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault();
+            TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault()!;
             _dbCabServicesContext.Remove(cab);
             _dbCabServicesContext.SaveChanges();
-            return true;
         }
-        public bool UpdateCab(TbCabDetail tbCabDetail)
+        public void UpdateCab(TbCabDetail tbCabDetail)
         {
-            TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault();
+            TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault()!;
             cab.CabTypeId = tbCabDetail.CabTypeId;
             cab.UpdateDate = DateTime.Now;
             _dbCabServicesContext.Entry(cab).State = EntityState.Modified;
             _dbCabServicesContext.SaveChanges();
-            return true;
         }
     }
 }

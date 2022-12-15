@@ -35,6 +35,7 @@ namespace Service.Services
             List<TbTripDetail> tbTripDetails = await _dbCabServicesContext.TbTripDetails.ToListAsync();
             return tbTripDetails;
         }
+
         public bool checkCabForConfirmBooking(TbBooking tbBooking)
         {
 
@@ -44,6 +45,7 @@ namespace Service.Services
             int CabStatus = Convert.ToInt32(cabDetail.Status);
             return CabStatus == 1;
         }
+
         public bool checkCabForBooking(TbBooking tbBooking)
         {
             TbCabDetail cabDetail = _dbCabServicesContext.TbCabDetails.Where(x => x.Cabid == tbBooking.CabId).FirstOrDefault()!;
@@ -59,6 +61,7 @@ namespace Service.Services
             _dbCabServicesContext.TbBookings.Add(tbBooking);
             _dbCabServicesContext.SaveChanges();
         }
+
         public bool ConfirmBooking(TbBooking tbBooking)
         {
             var booking = _dbCabServicesContext.TbBookings.Where(x => x.BookingId == tbBooking.BookingId).FirstOrDefault()!;
@@ -89,6 +92,7 @@ namespace Service.Services
                 return false;
             }
         }
+
         public bool UpdateCabStatus(TbBooking tbBooking)
         {
             TbBooking booking = _dbCabServicesContext.TbBookings.Where(x => x.BookingId == tbBooking.BookingId).FirstOrDefault()!;
@@ -115,6 +119,7 @@ namespace Service.Services
                 return false;
             }
         }
+
         public async Task<List<CabDisplay>> GetAvailableCabDetails()
         {
             List<CabDisplay> list = (from cab in _dbCabServicesContext.TbCabDetails
@@ -129,6 +134,7 @@ namespace Service.Services
                                      }).ToList();
             return list.ToList();
         }
+
         public async Task<List<TbBooking>> GetPendingBooking()
         {
             List<TbBooking> list = (from booking in _dbCabServicesContext.TbBookings
@@ -144,6 +150,7 @@ namespace Service.Services
                                     }).ToList();
             return list.ToList();
         }
+
         public bool RideCompleted(TbBooking tbBooking)
         {
             TbBooking booking = _dbCabServicesContext.TbBookings.Where(x => x.BookingId == tbBooking.BookingId).FirstOrDefault()!;
@@ -174,6 +181,7 @@ namespace Service.Services
                 return false;
             }
         }
+
         public SendingNotification GenerateMessage(TbBooking tbBooking)
         {
             SendingNotification sendingNotification = new SendingNotification();

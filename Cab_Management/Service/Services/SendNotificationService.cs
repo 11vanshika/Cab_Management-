@@ -20,6 +20,7 @@ namespace Service.Services
         {
             _dbCabServicesContext = dbcontext;
         }
+
         public bool SendWhatsAppMessage(SendingNotification sendingNotification)
         {
             if(sendingNotification != null) { 
@@ -38,6 +39,7 @@ namespace Service.Services
                 return false;
             }
         }
+
         public bool SendSMSMessage(SendingNotification sendingNotification)
         {
            if (sendingNotification != null) {

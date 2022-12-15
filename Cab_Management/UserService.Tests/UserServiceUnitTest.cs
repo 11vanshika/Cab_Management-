@@ -96,8 +96,8 @@ namespace UserDetailService.Test
             //Arrange
             var ExistingUser = new Registration()
             {
-                EmailId = "jyothi@gmail.com",
-                Password = "12345",    
+                EmailId = "avz@gmail.com",
+                Password = "123456",    
             };
             //Act
             encrypt.Setup(method => method.EncodePasswordToBase64(ExistingUser.Password)).Returns(ExistingUser.Password);
@@ -172,8 +172,8 @@ namespace UserDetailService.Test
             //Arrange
             var ExistingUser = new TbUser()
             {
-                EmailId = "jyothi@gmail.com",
-                Password = "12345"
+                EmailId = "avz@gmail.com",
+                Password = "123456"
             };
 
             //Act

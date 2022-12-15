@@ -31,6 +31,7 @@ namespace API.Controllers
         /// <param name="sendNotification"></param>
         public BookingController(DbCabServicesContext dbCabServicesContext, ICabBooking cabbooking, ISendNotification sendNotification):base(dbCabServicesContext)
         {
+            _dbCabServicesContext = dbCabServicesContext;
             _cabbooking = cabbooking;
             _sendNotification = sendNotification;
             _crudStatus = new CrudStatus();
@@ -42,6 +43,7 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("GetTripDetails")]
+
         [Authorize]
         public async Task<ActionResult> GetTbTripDetails()
         {
@@ -62,6 +64,7 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("Available Cab")]
+
         [Authorize]
         public async Task<ActionResult> GetAvailableCabDetails()
         {
@@ -159,7 +162,7 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("RideCompleted")]
-       [Authorize(Policy = "Customer")]
+       //[Authorize(Policy = "Customer")]
         public JsonResult RideCompleted(TbBooking tbBooking)
         {
             try

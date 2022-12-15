@@ -12,7 +12,5 @@ namespace Service.Inteface
     {
         public bool SendWhatsAppMessage(SendingNotification sendingNotification);
         public bool SendSMSMessage(SendingNotification sendingNotification);
-
-        //public bool TripCompleteMessage(TbBooking tbBooking);
     }
 }
