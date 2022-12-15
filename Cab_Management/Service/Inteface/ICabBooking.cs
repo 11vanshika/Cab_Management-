@@ -11,7 +11,7 @@ namespace Service.Inteface
 {
     public interface ICabBooking
     {
-        public List<TbBooking> GetTbBookingDetails();
+        public List<BookingView> GetTbBookingDetails();
         public List<TbTripDetail> GetTbTripDetails();
         public bool checkCabForConfirmBooking(TbBooking Booking);
         public bool checkCabForBooking(TbBooking tbBooking);

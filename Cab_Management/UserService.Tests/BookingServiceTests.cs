@@ -30,9 +30,9 @@ namespace Bookingservice.Tests
         {
             //Arrange
             var result = bookingService.GetTbBookingDetails();
-            var count = _fixture.context.TbBookings.Count();
+            var count = _fixture.context.BookingViews.Count();
             //Act
-            var items = Assert.IsType<List<TbBooking>>(result);
+            var items = Assert.IsType<List<BookingView>>(result);
             //Assert
             Assert.Equal(count, items.Count());
         }

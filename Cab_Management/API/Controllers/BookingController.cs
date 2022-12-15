@@ -49,7 +49,8 @@ namespace API.Controllers
         }
         [HttpPost]
         [Route("CabBooking")]
-        [Authorize]
+        [Authorize(Policy = "Customer")]
+
         public JsonResult BookingCab(TbBooking tbBooking)
         {
             try
@@ -70,9 +71,25 @@ namespace API.Controllers
                 return new JsonResult(ex.Message);
             }
         }
-        [HttpPost]
-        [Route("ConfirmBooking")]
+
+        [HttpGet]
+        [Route("BookingPending")]
         [Authorize(Policy = "Cab_Admin")]
+        public JsonResult GetPendingBooking()
+        {
+            try
+            {
+                return new JsonResult(_cabbooking.GetPendingBooking().ToList());
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("ConfirmBooking")]
+       [Authorize(Policy = "Cab_Admin")]
         public JsonResult ConfirmBooking(TbBooking tbBooking)
         {
             try
@@ -80,10 +97,12 @@ namespace API.Controllers
                 bool result = _cabbooking.checkCabForConfirmBooking(tbBooking);
                 if (result == true)
                 {
-                      result = _cabbooking.UpdateCabStatus(tbBooking);
+
+                    result = _cabbooking.ConfirmBooking(tbBooking);
                     if (result == true)
                     {
-                        result = _cabbooking.ConfirmBooking(tbBooking);
+                      
+                        result = _cabbooking.UpdateCabStatus(tbBooking);
                         if (result == true)
                         {
                             return new JsonResult(new CrudStatus() { Status = result, Message = "Booking Confirmed Successfully" });
@@ -103,7 +122,7 @@ namespace API.Controllers
         }
         [HttpPut]
         [Route("RideCompleted")]
-       [Authorize(Policy = "Customer")]
+        [Authorize(Policy = "Customer")]
         public JsonResult RideCompleted(TbBooking tbBooking)
         {
             try
@@ -120,20 +139,7 @@ namespace API.Controllers
                 return new JsonResult(ex.Message);
             }
         }
-        [HttpGet]
-        [Route("BookingPending")]
-        [Authorize(Policy = "Cab_Admin")]
-        public JsonResult GetPendingBooking()
-        {
-            try
-            {
-                return new JsonResult(_cabbooking.GetPendingBooking().ToList());
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(ex.Message);
-            }
-        }
+     
         [HttpGet]
         [Route("GetBookingDetails")]
         [Authorize(Policy = "Cab_Admin")]

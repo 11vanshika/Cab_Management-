@@ -70,6 +70,20 @@ namespace Service.Services
             _dbCabServicesContext.SaveChanges();
             return true;
         }
+
+        public List<TbCabDetail> Getuser(int id)
+        {
+            List<TbCabDetail> list = (from user in _dbCabServicesContext.TbCabDetails
+                                      where (user.UserId == id)
+                                      select new TbCabDetail
+                                      {
+                                          Cabid = user.Cabid,
+                                          RegistrationNun = user.RegistrationNun,
+                                          CabTypeId = user.CabTypeId,
+                                          UserId = user.UserId,
+                                      }).ToList();
+            return list.ToList();
+        }
     }
 }
 

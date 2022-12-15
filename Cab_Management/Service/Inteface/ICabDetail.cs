@@ -15,5 +15,7 @@ namespace Service.Inteface
         public bool CheckRegNum(TbCabDetail tbCabDetail);
         List<TbCabDetail> GetTbCabDetails();
         public bool UpdateCab(TbCabDetail tbCabDetail);
+
+        public List<TbCabDetail> Getuser(int id);
     }
 }

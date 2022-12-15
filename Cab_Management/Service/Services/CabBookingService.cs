@@ -23,9 +23,9 @@ namespace Service.Services
             _dbCabServicesContext = dbcontext;
             _sendNotification = sendNotification;
         }
-        public List<TbBooking> GetTbBookingDetails()
+        public List<BookingView> GetTbBookingDetails()
         {
-            List<TbBooking> tbBookings = _dbCabServicesContext.TbBookings.ToList();
+            List<BookingView> tbBookings = _dbCabServicesContext.BookingViews.ToList();
             return tbBookings;
         }
         public List<TbTripDetail> GetTbTripDetails()
@@ -47,14 +47,9 @@ namespace Service.Services
         }
         public bool checkCabForBooking(TbBooking tbBooking)
         {
-            TbBooking booking = _dbCabServicesContext.TbBookings.Where(x =>x.BookingId == tbBooking.BookingId).FirstOrDefault()!;
-            TbCabDetail cabDetail = _dbCabServicesContext.TbCabDetails.Where(x => x.Cabid == booking.CabId).FirstOrDefault()!;
+            TbCabDetail cabDetail = _dbCabServicesContext.TbCabDetails.Where(x => x.Cabid == tbBooking.CabId).FirstOrDefault()!;
             int CabStatus = Convert.ToInt32(cabDetail.Status);
-            if (CabStatus == 1)
-            {
-                return true;
-            }
-            return false;
+            return CabStatus == 1;
         }
         public bool bookingCab(TbBooking tbBooking)
         {
@@ -183,9 +178,9 @@ namespace Service.Services
         public SendingNotification GenerateMessage(TbBooking tbBooking)
         {
             SendingNotification sendingNotification = new SendingNotification();
-            TbBooking tbBooking1 = _dbCabServicesContext.TbBookings.Where(x => x.BookingId == tbBooking.BookingId).FirstOrDefault();
-            TbCabDetail tbCabDetail = _dbCabServicesContext.TbCabDetails.Where(x=>x.Cabid == tbBooking1.CabId).FirstOrDefault();  
-            TbUser tbUser = _dbCabServicesContext.TbUsers.Where(x => x.UserId == tbBooking1.UserId).FirstOrDefault();
+            TbBooking tbBooking1 = _dbCabServicesContext.TbBookings.Where(x => x.BookingId == tbBooking.BookingId).FirstOrDefault()!;
+            TbCabDetail tbCabDetail = _dbCabServicesContext.TbCabDetails.Where(x=>x.Cabid == tbBooking1.CabId).FirstOrDefault()!;  
+            TbUser tbUser = _dbCabServicesContext.TbUsers.Where(x => x.UserId == tbBooking1.UserId).FirstOrDefault()!;
             sendingNotification.Message = "Hello" + tbUser.FirstName + " your Booking Confirm " + " Cab Number is " + tbCabDetail.RegistrationNun +" Booking Id is " + tbBooking1.BookingId;
             sendingNotification.MobileNumber = tbUser.MobileNumber.ToString();
             return sendingNotification;

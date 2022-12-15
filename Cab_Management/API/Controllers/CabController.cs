@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Service.Inteface;
 
@@ -17,6 +18,7 @@ namespace API.Controllers
         private readonly ICabDetail cabAdmin;
         public CabController(DbCabServicesContext dbCabServicesContext, ICabDetail cabAdmin):base(dbCabServicesContext)
         {
+            this.dbCabServicesContext = dbCabServicesContext;
             this.cabAdmin = cabAdmin;
         }
 
@@ -111,6 +113,20 @@ namespace API.Controllers
                     }
                 }
                 return new JsonResult(new CrudStatus() { Status = false, Message = "UnAuthorized User" });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(ex.Message);
+            }
+        }
+        [HttpGet]
+        [Route("V2")]
+        [MapToApiVersion("2")]
+        public JsonResult Getcab(int id)
+        {
+            try
+            {
+                return new JsonResult(cabAdmin.Getuser(id).ToList());
             }
             catch (Exception ex)
             {
