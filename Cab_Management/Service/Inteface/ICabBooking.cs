@@ -11,15 +11,15 @@ namespace Service.Inteface
 {
     public interface ICabBooking
     {
-        public List<TbBooking> GetTbBookingDetails();
-        public List<TbTripDetail> GetTbTripDetails();
+        public Task<List<TbBooking>> GetTbBookingDetails();
+        public Task<List<TbTripDetail>> GetTbTripDetails(); 
         public bool checkCabForConfirmBooking(TbBooking Booking);
         public bool checkCabForBooking(TbBooking tbBooking);
-        public bool bookingCab(TbBooking Booking);
+        public void bookingCab(TbBooking Booking);
         public bool ConfirmBooking(TbBooking tbBooking);
         public bool UpdateCabStatus(TbBooking tbBooking);
-        public List<CabDisplay> GetAvailableCabDetails();
-        public List<TbBooking> GetPendingBooking();
+        public Task<List<CabDisplay>> GetAvailableCabDetails();
+        public Task<List<TbBooking>> GetPendingBooking();
         public bool RideCompleted(TbBooking tbBooking);
     }
 }

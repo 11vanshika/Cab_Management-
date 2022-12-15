@@ -13,7 +13,7 @@ namespace Service.Inteface
         public bool RemoveCab(TbCabDetail tbCabDetail);
         public bool CheckAdmin(TbCabDetail tbCabDetail);
         public bool CheckRegNum(TbCabDetail tbCabDetail);
-        List<TbCabDetail> GetTbCabDetails();
+        Task<List<TbCabDetail>> GetTbCabDetails();
         public bool UpdateCab(TbCabDetail tbCabDetail);
     }
 }
