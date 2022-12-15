@@ -10,7 +10,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   // [Authorize(Policy = "Cab_Admin")]
+    [Authorize(Policy = "Cab_Admin")]
     public class CabController : BaseController
     {
         private readonly DbCabServicesContext dbCabServicesContext;
