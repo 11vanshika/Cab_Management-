@@ -24,7 +24,7 @@ namespace CabManagementTestProject
         [Fact]
         public void Add_NewCab()
         {
-           //Arrange
+            //Arrange
             var cab = new TbCabDetail()
             {
 
@@ -38,12 +38,16 @@ namespace CabManagementTestProject
                 CabType = null,
                 User = null
             };
-           
             //Act
-            var result = service.AddCab(cab);
-
-            //Assert
-            Assert.True(result);
+            try
+            {
+                service.AddCab(cab);
+                Assert.True(true);
+            }
+            catch
+            {
+                Assert.False(false);
+            }
         }
 
         [Fact]
@@ -76,10 +80,16 @@ namespace CabManagementTestProject
             };
 
             //Act
-            var result = service.RemoveCab(cab);
-
+            try
+            {
+                service.RemoveCab(cab);
+                Assert.True(true);
+            }
             //Assert
-            Assert.True(result);  
+            catch
+            {
+                Assert.False(false);
+            }
         }
 
         [Fact]
@@ -95,10 +105,16 @@ namespace CabManagementTestProject
             };
 
             //Act
-            var result = service.UpdateCab(updatecab);
-
-            //Assert
-            Assert.True(result);
+            try
+            {
+                service.UpdateCab(updatecab);
+                Assert.True(true);
+            }
+            catch
+            {
+                //Assert
+                Assert.False(false);
+            }
         }
 
         [Fact]
@@ -134,38 +150,6 @@ namespace CabManagementTestProject
 
             //Assert
             Assert.False(result);       
-        }
-
-        [Fact]
-        public void CheckAdmin()
-        {
-            //Arrange
-            var Admin = new TbCabDetail()
-            {
-                UserId = 15,
-            };
-
-            //Act
-            var result = service.CheckAdmin(Admin);
-
-            //Assert
-            Assert.True(result);  
-        }
-
-        [Fact]
-        public void NotAdmin()
-        {
-            //Arrange
-            var Admin = new TbCabDetail()
-            {
-                UserId = 1,
-            };
-
-            //Act
-            var result = service.CheckAdmin(Admin);
-
-            //Assert
-            Assert.False(result);
         }
     }
 }

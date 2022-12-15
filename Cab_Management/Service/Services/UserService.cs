@@ -25,30 +25,35 @@ namespace Service.Services
             _encrypt = encrypt;
             _generateToken = generateToken;
         }
+
         public List<TbUser> GetUsersDetails()
         {
             List<TbUser> users = _dbContext.TbUsers.ToList();
             return users;
         }
+
         public List<UserView> GetUsersDetail()
         {
             List<UserView> users = _dbContext.UserViews.ToList();
             return users;
         }
+
         public bool ConfirmPassword(Registration tblUser)
         {
             return tblUser.Password == tblUser.ConfirmPassword;
         }
+
         public bool CheckExtistUser(Registration login)
         {
             var Email = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId).FirstOrDefault();
-            if (Email == null)
-            {
-                return false;
-            }
-            return true;
-     
+            //if (Email == null)
+            //{
+            //    return false;
+            //}
+            //return true;
+            return Email != null;
         }
+
         public string Register(TbUser tblUser)
         {
             tblUser.Password = _encrypt.EncodePasswordToBase64(tblUser.Password);
@@ -63,7 +68,8 @@ namespace Service.Services
 
         public Tuple<string, int> UserLogin(TbUser login)
         {
-            TbUser Userlogin = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId && x.Password == _encrypt.EncodePasswordToBase64(login.Password)).FirstOrDefault()!;
+            string checkpass = _encrypt.EncodePasswordToBase64(login.Password);
+            TbUser Userlogin = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId && x.Password == checkpass).FirstOrDefault()!;
             if (Userlogin != null)
             {
                 //var token = GenerateToken(Userlogin);
@@ -76,6 +82,7 @@ namespace Service.Services
                 return null!;
             }
         }
+
         public bool ForgotPassword(ForgetPassword login)
         {
             TbUser UserEmail = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId).SingleOrDefault()!;

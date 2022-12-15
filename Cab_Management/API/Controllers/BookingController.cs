@@ -16,12 +16,13 @@ namespace API.Controllers
         private readonly ISendNotification _sendNotification;
         public BookingController(DbCabServicesContext dbCabServicesContext, ICabBooking cabbooking, ISendNotification sendNotification):base(dbCabServicesContext)
         {
+            _dbCabServicesContext = dbCabServicesContext;
             _cabbooking = cabbooking;
             _sendNotification = sendNotification;
         }
         [HttpGet]
         [Route("GetTripDetails")]
-        [Authorize]
+        //[Authorize]
         public JsonResult GetTbTripDetails()
         {
             try
@@ -35,7 +36,7 @@ namespace API.Controllers
         }
         [HttpGet]
         [Route("Available Cab")]
-        [Authorize]
+        //[Authorize]
         public JsonResult GetAvailableCabDetails()
         {
             try
@@ -49,7 +50,7 @@ namespace API.Controllers
         }
         [HttpPost]
         [Route("CabBooking")]
-        [Authorize]
+       // [Authorize]
         public JsonResult BookingCab(TbBooking tbBooking)
         {
             try
@@ -72,7 +73,7 @@ namespace API.Controllers
         }
         [HttpPost]
         [Route("ConfirmBooking")]
-        [Authorize(Policy = "Cab_Admin")]
+       // [Authorize(Policy = "Cab_Admin")]
         public JsonResult ConfirmBooking(TbBooking tbBooking)
         {
             try
@@ -103,7 +104,7 @@ namespace API.Controllers
         }
         [HttpPut]
         [Route("RideCompleted")]
-       [Authorize(Policy = "Customer")]
+       //[Authorize(Policy = "Customer")]
         public JsonResult RideCompleted(TbBooking tbBooking)
         {
             try
@@ -122,7 +123,7 @@ namespace API.Controllers
         }
         [HttpGet]
         [Route("BookingPending")]
-        [Authorize(Policy = "Cab_Admin")]
+        //[Authorize(Policy = "Cab_Admin")]
         public JsonResult GetPendingBooking()
         {
             try
@@ -136,7 +137,7 @@ namespace API.Controllers
         }
         [HttpGet]
         [Route("GetBookingDetails")]
-        [Authorize(Policy = "Cab_Admin")]
+       // [Authorize(Policy = "Cab_Admin")]
         public JsonResult GetTbBookingDetails()
         {
             try

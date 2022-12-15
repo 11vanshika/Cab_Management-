@@ -10,14 +10,17 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "Cab_Admin")]
+   // [Authorize(Policy = "Cab_Admin")]
     public class CabController : BaseController
     {
         private readonly DbCabServicesContext dbCabServicesContext;
         private readonly ICabDetail cabAdmin;
+        private readonly CrudStatus _crudStatus;
         public CabController(DbCabServicesContext dbCabServicesContext, ICabDetail cabAdmin):base(dbCabServicesContext)
         {
+            this.dbCabServicesContext = dbCabServicesContext;
             this.cabAdmin = cabAdmin;
+            _crudStatus = new CrudStatus();
         }
 
         [HttpPost]
@@ -26,21 +29,20 @@ namespace API.Controllers
         {
             try
             {
-
-                bool result = cabAdmin.CheckAdmin(tbCabDetail);
-                if (result == true)
+                bool result = cabAdmin.CheckRegNum(tbCabDetail);
+                if (result == false)
                 {
-                    result = cabAdmin.CheckRegNum(tbCabDetail);
-                    if (result == false)
-                    {
-                        result = cabAdmin.AddCab(tbCabDetail);
-                        if (result == true)
-                        {
-                            return new JsonResult(new CrudStatus() { Status = result, Message = "Cab Added Successfully" });
-                        }
-                    }
+                    cabAdmin.AddCab(tbCabDetail);
+                    _crudStatus.Status = true;
+                    _crudStatus.Message = "Cab Added Successfully";     
                 }
-                return new JsonResult(new CrudStatus() { Status = false, Message = "UnAuthorized user" });
+                else
+                {
+                    _crudStatus.Status = false;
+                    _crudStatus.Message = "cab Already exist";
+                }
+
+                return new JsonResult(_crudStatus);
             }
             catch (Exception ex)
             {
@@ -69,20 +71,21 @@ namespace API.Controllers
             try
             {
                 TbCabDetail cabDetail = dbCabServicesContext.TbCabDetails.Where(x => x.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault();
-                bool result = cabAdmin.CheckAdmin(cabDetail);
+                 bool result = cabAdmin.CheckRegNum(tbCabDetail);
                 if (result == true)
                 {
-                    result = cabAdmin.CheckRegNum(tbCabDetail);
-                    if (result == true)
-                    {
-                        result = cabAdmin.RemoveCab(tbCabDetail);
-                        if (result == true)
-                        {
-                            return new JsonResult(new CrudStatus() { Status = result, Message = "Removed cab Successfully" });
-                        }
-                    }
+                    cabAdmin.RemoveCab(tbCabDetail);
+                    _crudStatus.Status = true;
+                    _crudStatus.Message = "Removed Cab  Successfully";
+
                 }
-                return new JsonResult(new CrudStatus() { Status = false, Message = "UnAuthorized User" });
+                else
+                {
+                    _crudStatus.Status = false;
+                    _crudStatus.Message = "cab RegNum not matched";
+                }
+
+                return new JsonResult(_crudStatus);
             }
             catch (Exception ex)
             {
@@ -96,21 +99,20 @@ namespace API.Controllers
         {
             try
             {
-                TbCabDetail cabDetail = dbCabServicesContext.TbCabDetails.Where(x=>x.RegistrationNun== tbCabDetail.RegistrationNun).FirstOrDefault();   
-                bool result = cabAdmin.CheckAdmin(cabDetail);
-                if (result == true)
-                {
-                    result = cabAdmin.CheckRegNum(tbCabDetail);
+                   TbCabDetail cabDetail = dbCabServicesContext.TbCabDetails.Where(x => x.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault()!;
+                    bool result = cabAdmin.CheckRegNum(tbCabDetail);
                     if (result == true)
                     {
-                        result = cabAdmin.UpdateCab(tbCabDetail);
-                        if (result == true)
-                        {
-                            return new JsonResult(new CrudStatus() { Status = result, Message = "Updated cab Successfully" });
-                        }
+                        cabAdmin.UpdateCab(tbCabDetail);
+                        _crudStatus.Status = true;
+                        _crudStatus.Message = "updated Cab  Successfully";
                     }
-                }
-                return new JsonResult(new CrudStatus() { Status = false, Message = "UnAuthorized User" });
+                    else
+                    {
+                        _crudStatus.Status = false;
+                        _crudStatus.Message = "cab RegNum not matched";
+                    }
+                return new JsonResult(_crudStatus);
             }
             catch (Exception ex)
             {
