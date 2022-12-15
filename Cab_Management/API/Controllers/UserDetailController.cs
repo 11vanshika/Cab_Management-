@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -34,24 +35,25 @@ namespace API.Controllers
         private readonly DbCabServicesContext dbCabservice;
         private readonly IUserDetails IuserDetails;
         private readonly IConfiguration _configuration;
+        private readonly IPagination _pagination;
         private const string Sessionkey = "userId";
-        private readonly IMapper _mapper; 
+        private readonly IMapper _mapper;
 
-        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration , IMapper mapper):base(dbContext)
+        public UserDetailsController(DbCabServicesContext dbContext, IUserDetails iuserDetails, IConfiguration configuration, IPagination pagination, IMapper mapper) : base(dbContext)
         {
             dbCabservice=dbContext;
             IuserDetails = iuserDetails;
-            _configuration = configuration; 
+            _configuration = configuration;
+            _pagination = pagination;
             _mapper = mapper;
         }
 
         // GET: api/<UserController>
         [HttpGet()]
-        //[Authorize]
-        
         ///<summary>
         ///Getting all the UserDetails from GetUserDetails()
         ///</summary>
+        [Authorize]
         public JsonResult GetUserDetail()
         {
             try
@@ -63,6 +65,27 @@ namespace API.Controllers
                 return new JsonResult(ex.Message);
             }
         }
+        [HttpGet]
+        [Route("PaginatedbyCreatedate")]
+        public IActionResult GetUsersCreateDate([FromQuery] PaginationParameters ownerParameters)
+        {
+            var pages = _pagination.GetUserbyCreateDate(ownerParameters);
+
+            var metadata = new
+            {
+                pages.TotalCount,
+                pages.PageSize,
+                pages.CurrentPage,
+                pages.TotalPages,
+                pages.HasNext,
+                pages.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            return Ok(pages);
+        }
+       
 
         /// <summary>
         /// Getting UserDetails from Versioning 2
@@ -71,7 +94,7 @@ namespace API.Controllers
         [HttpGet]
         [MapToApiVersion("2")]
         [Route("V2")]
-       // [Authorize]
+        [Authorize]
         public ActionResult<List<UserDisplay>> UserDetails2()
         {
             var users = IuserDetails.GetUsersDetail().Select(x=> _mapper.Map<UserDisplay>(x));
@@ -174,7 +197,7 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("ForgotPassword")]
-        //[Authorize]
+        [Authorize]
         public JsonResult Forgot_password(ForgetPassword login)
         {
             try

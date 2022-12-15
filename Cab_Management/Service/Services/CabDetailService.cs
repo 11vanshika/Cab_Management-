@@ -19,6 +19,17 @@ namespace Service.Services
             _dbCabServicesContext = dbcontext;
 
         }
+
+        public bool CheckAdmin(TbCabDetail tbCabDetail)
+        {
+            TbUser user = _dbCabServicesContext.TbUsers.Where(x => x.UserId == tbCabDetail.UserId).FirstOrDefault()!;
+            int? Userroleid = user.UserRoleId;
+            if (Userroleid == 2)
+            {
+                return true;
+            }
+            return false;
+        }
         public bool CheckRegNum(TbCabDetail tbCabDetail)
         {
             TbCabDetail cab = _dbCabServicesContext.TbCabDetails.Where(y => y.RegistrationNun == tbCabDetail.RegistrationNun).FirstOrDefault();
@@ -32,9 +43,10 @@ namespace Service.Services
                     _dbCabServicesContext.TbCabDetails.Add(tbCabDetail);
                     _dbCabServicesContext.SaveChanges();
         }
-        public List<TbCabDetail> GetTbCabDetails()
+
+        public async Task<List<TbCabDetail>> GetTbCabDetails()
         {
-            List<TbCabDetail> tbCabDetails = _dbCabServicesContext.TbCabDetails.ToList();
+            List<TbCabDetail> tbCabDetails = await _dbCabServicesContext.TbCabDetails.ToListAsync();
             return tbCabDetails;
         }
         public void RemoveCab(TbCabDetail tbCabDetail)

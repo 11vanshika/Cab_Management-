@@ -23,29 +23,27 @@ namespace Service.Services
             _dbCabServicesContext = dbcontext;
             _sendNotification = sendNotification;
         }
-
-        public List<TbBooking> GetTbBookingDetails()
+        
+        public async Task<List<TbBooking>> GetTbBookingDetails()
         {
-            List<TbBooking> tbBookings = _dbCabServicesContext.TbBookings.ToList();
+            List<TbBooking> tbBookings = await _dbCabServicesContext.TbBookings.ToListAsync();
             return tbBookings;
         }
-        public List<TbTripDetail> GetTbTripDetails()
+
+        public async Task<List<TbTripDetail>> GetTbTripDetails()
         {
-            List<TbTripDetail> tbTripDetails = _dbCabServicesContext.TbTripDetails.ToList();
+            List<TbTripDetail> tbTripDetails = await _dbCabServicesContext.TbTripDetails.ToListAsync();
             return tbTripDetails;
         }
 
         public bool checkCabForConfirmBooking(TbBooking tbBooking)
         {
+
             TbBooking booking = _dbCabServicesContext.TbBookings.Where(x => x.BookingId == tbBooking.BookingId).FirstOrDefault()!;
             int tbCab = Convert.ToInt32(booking.CabId);
             TbCabDetail cabDetail = _dbCabServicesContext.TbCabDetails.Where(x => x.Cabid == tbCab).FirstOrDefault()!;
             int CabStatus = Convert.ToInt32(cabDetail.Status);
-            if (CabStatus == 1)
-            {
-                return true;
-            }
-            return false;
+            return CabStatus == 1;
         }
 
         public bool checkCabForBooking(TbBooking tbBooking)
@@ -54,14 +52,14 @@ namespace Service.Services
             int CabStatus = Convert.ToInt32(cabDetail.Status);
             return CabStatus == 1;
         }
-        public bool bookingCab(TbBooking tbBooking)
+
+        public void bookingCab(TbBooking tbBooking)
         {
             tbBooking.CreateDate = DateTime.Now;
             tbBooking.UpdateDate = null;
             tbBooking.Status = 0;
             _dbCabServicesContext.TbBookings.Add(tbBooking);
             _dbCabServicesContext.SaveChanges();
-            return true;
         }
 
         public bool ConfirmBooking(TbBooking tbBooking)
@@ -122,7 +120,7 @@ namespace Service.Services
             }
         }
 
-        public List<CabDisplay> GetAvailableCabDetails()
+        public async Task<List<CabDisplay>> GetAvailableCabDetails()
         {
             List<CabDisplay> list = (from cab in _dbCabServicesContext.TbCabDetails
                                      join cabtype in _dbCabServicesContext.TbCabTypes on cab.CabTypeId equals cabtype.CabTypeId
@@ -137,7 +135,7 @@ namespace Service.Services
             return list.ToList();
         }
 
-        public List<TbBooking> GetPendingBooking()
+        public async Task<List<TbBooking>> GetPendingBooking()
         {
             List<TbBooking> list = (from booking in _dbCabServicesContext.TbBookings
                                     where (booking.Status == 0)
@@ -187,11 +185,11 @@ namespace Service.Services
         public SendingNotification GenerateMessage(TbBooking tbBooking)
         {
             SendingNotification sendingNotification = new SendingNotification();
-            TbBooking tbBooking1 = _dbCabServicesContext.TbBookings.Where(x => x.BookingId == tbBooking.BookingId).FirstOrDefault();
-            TbCabDetail tbCabDetail = _dbCabServicesContext.TbCabDetails.Where(x=>x.Cabid == tbBooking1.CabId).FirstOrDefault();  
-            TbUser tbUser = _dbCabServicesContext.TbUsers.Where(x => x.UserId == tbBooking1.UserId).FirstOrDefault();
+            TbBooking tbBooking1 = _dbCabServicesContext.TbBookings.Where(x => x.BookingId == tbBooking.BookingId).FirstOrDefault()!;
+            TbCabDetail tbCabDetail = _dbCabServicesContext.TbCabDetails.Where(x=>x.Cabid == tbBooking1.CabId).FirstOrDefault()!;  
+            TbUser tbUser = _dbCabServicesContext.TbUsers.Where(x => x.UserId == tbBooking1.UserId).FirstOrDefault()!;
             sendingNotification.Message = "Hello" + tbUser.FirstName + " your Booking Confirm " + " Cab Number is " + tbCabDetail.RegistrationNun +" Booking Id is " + tbBooking1.BookingId;
-            sendingNotification.MobileNumber = tbUser.MobileNumber.ToString();
+            sendingNotification.MobileNumber = tbUser.MobileNumber.ToString()!;
             return sendingNotification;
         }
     }

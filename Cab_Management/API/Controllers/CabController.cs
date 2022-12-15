@@ -52,11 +52,12 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("GetCabDetails")]
-        public JsonResult GetTbCabDetails()
+        public async Task<ActionResult> GetTbCabDetails()
         {
             try
             {
-                return new JsonResult(cabAdmin.GetTbCabDetails().ToList());
+                var cabs = await cabAdmin.GetTbCabDetails();
+                return Ok(cabs);
             }
             catch (Exception ex)
             {

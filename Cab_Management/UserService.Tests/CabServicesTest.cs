@@ -54,12 +54,12 @@ namespace CabManagementTestProject
         public void GetAll_CabDetails()
         {
             //Arrange
-            var result = service.GetTbCabDetails();
-            var count=dataBaseFixture.context.TbCabDetails.Count();
+            var result = service.GetTbCabDetails().Result;
+            var count = dataBaseFixture.context.TbCabDetails.Count();
             //Act
-            var items = Assert.IsType<List<TbCabDetail>>(result);
+            var items = result.Count();
             //Assert
-            Assert.Equal(count, items.Count);
+            Assert.Equal(count, items);
         }
 
         [Fact]

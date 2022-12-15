@@ -20,6 +20,5 @@ namespace Service.Inteface
 
         public bool ForgotPassword(ForgetPassword changePassword);
        
-
     }
 }

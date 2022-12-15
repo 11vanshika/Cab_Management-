@@ -11,10 +11,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Service.Services
 {
-    public class UserService : IUserDetails
+    public class UserService : IUserDetails,IPagination
     {
         private readonly DbCabServicesContext _dbContext;
         private readonly IEncrypt _encrypt;
@@ -32,6 +33,28 @@ namespace Service.Services
             return users;
         }
 
+        public IQueryable<TbUser> FindAll()
+        {
+            return this._dbContext.Set<TbUser>()
+                .AsNoTracking();
+        }
+        public PagedList<TbUser> GetUserbyCreateDate(PaginationParameters paginationParameters)
+        {
+            bool isDescending= paginationParameters.IsDescending;
+            if (isDescending == true)
+            {
+                return PagedList<TbUser>.ToPagedList(FindAll().OrderByDescending(on => on.CreateDate),
+                                paginationParameters.PageNumber,
+                                paginationParameters.PageSize);
+            }
+            else
+            {
+                return PagedList<TbUser>.ToPagedList(FindAll().OrderBy(on => on.CreateDate),
+                    paginationParameters.PageNumber,
+                    paginationParameters.PageSize);
+            }
+        }
+        
         public List<UserView> GetUsersDetail()
         {
             List<UserView> users = _dbContext.UserViews.ToList();
@@ -46,11 +69,6 @@ namespace Service.Services
         public bool CheckExtistUser(Registration login)
         {
             var Email = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId).FirstOrDefault();
-            //if (Email == null)
-            //{
-            //    return false;
-            //}
-            //return true;
             return Email != null;
         }
 
@@ -72,7 +90,6 @@ namespace Service.Services
             TbUser Userlogin = _dbContext.TbUsers.Where(x => x.EmailId == login.EmailId && x.Password == checkpass).FirstOrDefault()!;
             if (Userlogin != null)
             {
-                //var token = GenerateToken(Userlogin);
                 var token = _generateToken.GenerateToken(Userlogin);
                 Tuple<string, int> id = new Tuple<string, int>(token, Userlogin.UserId);
                 return id;
