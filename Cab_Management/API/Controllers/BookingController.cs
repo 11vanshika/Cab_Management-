@@ -111,21 +111,6 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("BookingPending")]
-        [Authorize(Policy = "Cab_Admin")]
-        public JsonResult GetPendingBooking()
-        {
-            try
-            {
-                return new JsonResult(_cabbooking.GetPendingBooking().ToList());
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(ex.Message);
-            }
-        }
-
         /// <summary>
         /// calling checkCabForConfirmBooking to check the cab availability then calling the ConfirmBooking if the booking is confirmed the cab status get updated
         /// </summary>
@@ -208,7 +193,7 @@ namespace API.Controllers
         [HttpGet]
         [Route("BookingPending")]
         [Authorize(Policy = "Cab_Admin")]
-        public async Task<ActionResult> GetPendingBooking()
+        public async Task<ActionResult> GetPendingBookings()
         {
             try
             {
